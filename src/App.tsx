@@ -10,11 +10,11 @@ import store from "./store";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Provider store={store}>
-        <AppRouter />
-      </Provider>
-    </BrowserRouter>
+      <BrowserRouter>
+        <Provider store={store}>
+          <AppRouter />
+        </Provider>
+      </BrowserRouter>
   );
 }
 

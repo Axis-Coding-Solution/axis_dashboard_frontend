@@ -7,11 +7,17 @@ const App = lazy(() => import("./App.tsx"));
 
 // ** styles import
 import "@/assets/css/index.css";
+import { ThemeProvider } from "@emotion/react";
+import theme from "./material-them.tsx";
+import Loader from "./components/Loader.tsx";
+// import { StyledEngineProvider } from "@mui/material";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Suspense fallback={<div>Loading...</div>}>
-      <App />
+    <Suspense fallback={<Loader />}>
+     <ThemeProvider theme={theme} >
+        <App />
+     </ThemeProvider> 
     </Suspense>
   </StrictMode>
 );

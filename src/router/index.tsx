@@ -37,6 +37,7 @@ const getLayouts: LayoutsType = {
   default: <DashboardLayout />,
 };
 const AppRouter = () => {
+  
   const layouts: string[] = ["blank", "default"];
   const allRoutes: RoutesType[] = [];
 

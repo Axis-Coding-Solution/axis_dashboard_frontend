@@ -1,8 +1,10 @@
+import MainComponent from "@/pages/dashboard/Main"
 
 const DashboardLayout = () => {
     return (
       <div>
-        DashboardLayout
+        {/* DashboardLayout */}
+        <MainComponent />
       </div>
     )
   }

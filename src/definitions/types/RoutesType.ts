@@ -9,3 +9,7 @@ export type RoutesType = {
     protectedRoute?: boolean;
   };
 };
+
+export type IconsType = {
+  [key: string]: any;
+}
