@@ -1,2 +1,5 @@
 import { combineReducers } from "@reduxjs/toolkit";
-export default combineReducers ({})
+import layout from "./layout";
+export default combineReducers ({
+    layout,
+})

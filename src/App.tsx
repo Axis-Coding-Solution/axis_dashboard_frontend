@@ -1,12 +1,9 @@
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-
-import AppRouter from "./router";
-import store from "./store";
-
 // ! import main routing file here and use it in the browser router
-
+import AppRouter from "./router";
 // ! also store main file would be used here too
+import store from "./store";
 
 function App() {
   return (

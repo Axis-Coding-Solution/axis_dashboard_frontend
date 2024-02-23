@@ -11,6 +11,11 @@ import RocketOutlinedIcon from '@mui/icons-material/RocketOutlined';
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
 import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined';
+import Brightness2OutlinedIcon from '@mui/icons-material/Brightness2Outlined';
+import ModeNightIcon from '@mui/icons-material/ModeNight';
+import MarkEmailUnreadOutlinedIcon from '@mui/icons-material/MarkEmailUnreadOutlined';
+import MarkChatUnreadOutlinedIcon from '@mui/icons-material/MarkChatUnreadOutlined';
+import AdjustIcon from '@mui/icons-material/Adjust';
 export default {
         SpeedTwoToneIcon,
         PeopleAltTwoToneIcon,
@@ -24,6 +29,11 @@ export default {
         RocketOutlinedIcon,
         MonetizationOnOutlinedIcon,
         PermIdentityOutlinedIcon,
-        DiamondOutlinedIcon
+        DiamondOutlinedIcon,
+        Brightness2OutlinedIcon,
+        ModeNightIcon,
+        MarkEmailUnreadOutlinedIcon,
+        MarkChatUnreadOutlinedIcon,
+        AdjustIcon
 };
    

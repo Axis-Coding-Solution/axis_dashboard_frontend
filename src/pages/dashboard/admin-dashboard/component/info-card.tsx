@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material'
+import { Box,Paper, Typography } from '@mui/material'
 import LinearDeterminate from './progess-bar'
 
 const InfoCard = (props: any) => {
@@ -12,27 +12,15 @@ const InfoCard = (props: any) => {
 
         }} >
             {AnalyticCardData && AnalyticCardData.map((item: any, index: number) => (
-                <Box sx={{
-                    width: "100%",
-                    height: "130px",
-                    boxShadow: 5,
-                    borderRadius: "10px",
-                    paddingX: "15px",
-                    paddingY: "5px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "start",
-                    justifyContent: "space-between",
-                    backgroundColor: "#fff",
-                }} >
-                    <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }} >
-                        <Typography>{item.title}</Typography>
-                        <span>{item.percentage}</span>
+                <Paper key={index} sx={{ display: "flex", flexDirection: "column", gap: "10px", }} >
+                    <Box sx={{ display: "flex", justifyContent: "space-between" }} >
+                        <Typography variant='h4' >{item.title}</Typography>
+                        <Typography variant='h4' >{item.percentage}</Typography>
                     </Box>
-                    <p> {item.value} </p>
+                    <Typography> {item.value} </Typography>
                     <LinearDeterminate />
-                    <p>{item.description}</p>
-                </Box>
+                    <Typography variant='h5' >{item.description}</Typography>
+                </Paper>
             ))}
         </Box>
     )

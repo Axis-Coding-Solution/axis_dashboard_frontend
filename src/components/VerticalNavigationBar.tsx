@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { NavigationData } from "@/navigation";
 import MuiIcons from "@/components/mui-icons";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Paper, Typography } from "@mui/material";
 
 const VerticalNavigationBar = (props: any) => {
     const { open, toggle, setToggle } = props
@@ -9,12 +9,13 @@ const VerticalNavigationBar = (props: any) => {
         setToggle((prevToggle: number) => prevToggle === index ? -1 : index);
     };
     return (
-        <Box sx={{
+        <Paper sx={{
             width: open ? "50px" : "270px",
             transition: "width 0.5s",
             // position: "absolute",
             // left: 0,
             height: "100%",
+            bgcolor: "white",
 
         }} >
             <Box paddingY={3}>
@@ -103,7 +104,7 @@ const VerticalNavigationBar = (props: any) => {
                     </Box>
                 ))}
             </Box>
-        </Box>
+        </Paper>
     )
 }
 

@@ -1,12 +1,15 @@
 import { Box } from '@mui/material'
-import { MdMarkEmailUnread } from "react-icons/md";
-import { TbNotification } from "react-icons/tb";
 import HeaderActivity from "../pages/dashboard/header-activity";
 import logo from "@/assets/images/axis-logo.jpeg"
 import MuiIcons from './mui-icons';
-
+import { useSelector } from 'react-redux';
+import { setTheme } from '@/store/layout';
+import { useAppDispatch } from '@/utils/hooks';
 const Header = (props: any) => {
+    const { themeMode } = useSelector((store: any) => store.layout)
     const { open, setOpen } = props
+    const dispatch = useAppDispatch()
+    console.log("headerState =", themeMode)
     return (
         <Box
             paddingX={2}
@@ -51,9 +54,17 @@ const Header = (props: any) => {
                     }
                     <span style={{ marginLeft: "10px", fontWeight: "600", marginTop: "9px", color: "#059669" }} >Axis Coding Solutions</span>
                 </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: "10px", }} >
-                    <MdMarkEmailUnread size={20} color="#059669" />
-                    <TbNotification size={20} color="#059669" />
+                <Box sx={{ display: "flex", alignItems: "center", gap: "10px", }}>
+
+                    <Box onClick={() => dispatch(setTheme(themeMode === "light" ? "dark" : "light"))} >
+                        {themeMode === "light" ?
+                            <MuiIcons.Brightness2OutlinedIcon />
+                            :
+                            <MuiIcons.ModeNightIcon />
+                        }
+                    </Box>
+                    <MuiIcons.MarkEmailUnreadOutlinedIcon />
+                    <MuiIcons.MarkChatUnreadOutlinedIcon />
                     <HeaderActivity />
                 </Box>
             </Box>

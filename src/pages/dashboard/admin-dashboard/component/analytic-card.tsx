@@ -1,28 +1,21 @@
-import { Avatar, Box, Card, Stack, Typography } from '@mui/material'
-import { deepOrange, deepPurple } from '@mui/material/colors';
+import { Avatar, Box, Paper, Stack, Typography } from '@mui/material'
 const AnalyticCard = (props: any) => {
     const { AnalyticCardData } = props
     return (
-        <Box sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            gap: "20px",
-            width: "100%",
-
-        }} >
+        <Paper sx={{ bgcolor: "#F3F4F6", padding: "0px",flexDirection: "row", }} >
             {AnalyticCardData && AnalyticCardData.map((item: any, index: number) => (
-                <Card key={index} sx={{}}>
-                    <Stack direction="row" justifyContent="space-between" width={"15rem"} padding={2} > 
-                        <Avatar sx={{ bgcolor: "#a7f3d0", color: "#059669" }}> {item.icon} </Avatar>
-                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "end", gap: "5px" }} >
-                            <span style={{ color: "#000", fontWeight: "bold", fontSize: "20px" }} >{item.quantity}</span>
-                            <Typography fontSize={14} >{item.name}</Typography>
+                <Paper key={index} >
+                    <Stack direction="row" justifyContent="space-between">
+                        <Avatar > {item.icon} </Avatar>
+                        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "end", alignItems: "end", gap: "5px" }}  >
+                            <Typography variant='h3'>{item.quantity}</Typography>
+                            <Typography variant='h4' >{item.name}</Typography>
                         </Box>
                     </Stack>
 
-                </Card>
+                </Paper>
             ))}
-        </Box>
+        </Paper>
     )
 }
 
