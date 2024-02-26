@@ -14,7 +14,7 @@ const Statistics = () => {
       <Typography variant='h4' > Statistics </Typography>
       <Box sx={{ padding: "20px" }} >
         {data.map((item: any, index: number) => (
-          <Box key={index} sx={{ border: "1px solid white", borderRadius: "5px", mb: 2, padding: "10px" }} >
+          <Box key={index} sx={{ border: "1px solid #e0e0e0", borderRadius: "5px", mb: 2, padding: "10px" }} >
             <Stack direction="row" justifyContent="space-between" gap={2} >
               <Typography> {item.name} </Typography>
               <Typography variant='h5' sx={{ display: "flex", alignItems: "center", gap: "5px" }} >

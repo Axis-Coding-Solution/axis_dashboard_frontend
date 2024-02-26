@@ -1,6 +1,6 @@
 import MainComponent from "@/pages/dashboard/Main";
 import AdminDashboard from "@/pages/dashboard/admin-dashboard/admin-dashboard";
-import EmployeeDashboard from "@/pages/dashboard/employee-dashboard";
+import EmployeeDashboard from "@/pages/dashboard/employee-dashboard/employee-dashboard";
 
 export default [
   {

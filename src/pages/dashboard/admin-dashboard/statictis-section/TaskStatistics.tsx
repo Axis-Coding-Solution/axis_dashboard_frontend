@@ -18,7 +18,7 @@ const TaskStatistics = () => {
             <Typography variant='h4' >Task Statistics</Typography>
             <Stack direction="row" justifyContent="space-between" gap={2} >
                 { taskData.map((item: any, index: number) => (
-                    <Box key={index} sx={{ display: "flex", justifyContent: "center", flexDirection: "column", gap: "5px", alignItems: "center", padding: "10px 15px", width: "100%",  border:" 1px solid white", borderRadius: "5px" }} >
+                    <Box key={index} sx={{ display: "flex", justifyContent: "center", flexDirection: "column", gap: "5px", alignItems: "center", padding: "10px 15px", width: "100%",  border:" 1px solid #e0e0e0", borderRadius: "5px" }} >
                     <Typography variant='h5' > {item.category} </Typography>
                     <Typography variant='h4' > {item.value} </Typography>
                 </Box>

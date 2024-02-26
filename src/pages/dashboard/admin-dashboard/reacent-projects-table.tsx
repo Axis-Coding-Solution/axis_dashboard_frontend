@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -6,6 +5,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { Box, Typography } from '@mui/material';
 
 function createData(
     name: string,
@@ -25,10 +25,12 @@ const rows = [
     createData('Gingerbread', 356, 16.0, 49, 3.9),
 ];
 
-export default function AdminDashboardTable() {
+export default function RecentProjectsTable() {
     return (
-        <TableContainer  >
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <Paper sx={{ width: "100%", padding: "0px", borderRadius: "10px"}} >
+         <Typography variant="h6" sx={{ fontWeight: "bold", paddingX: "20px", paddingY: "10px"}}> Recent  Projects </Typography>
+        <TableContainer sx={{ }} >
+            <Table sx={{minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
                         <TableCell>Dessert (100g serving)</TableCell>
@@ -56,5 +58,10 @@ export default function AdminDashboardTable() {
                 </TableBody>
             </Table>
         </TableContainer>
+        <Box sx={{ padding: "20px", borderTop: "1px solid #000",display: "flex", alignItems: "center", justifyContent: "center" }} >
+        <Typography variant="h5"> View all Projects </Typography>
+        </Box>
+        </Paper>
+
     );
 }

@@ -34,7 +34,7 @@ const TodayAbsent = () => {
                     display: "flex",
                     flexDirection: " column",
                     gap: "10px",
-                    border: "1px solid white",
+                    border: "1px solid #e0e0e0",
                     borderRadius: "5px",
                     padding: "20px",
                 }}

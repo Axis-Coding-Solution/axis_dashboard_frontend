@@ -1,14 +1,15 @@
 // import { dashboard } from "@/navigation/dashboard"
-import { Box, Typography } from "@mui/material"
+import { Box, Stack, Typography } from "@mui/material"
 import AnalyticCard from "./component/analytic-card"
 import MuiIcons from '@/components/mui-icons'
 import RevenueSalesGraph from "./revenue-sales-graph"
 import InfoCard from "./component/info-card"
-import BreadCrumbs from "@/components/BreadCrumbs"
 import Statistics from "./statictis-section/Statistics"
 import TaskStatistics from "./statictis-section/TaskStatistics"
 import TodayAbsent from "./statictis-section/today-absent"
 import InvoicePayments from "./Invoice-payments"
+import ClientTable from "./component/client-table"
+import RecentProjectsTable from "./reacent-projects-table"
 
 const AdminDashboard = () => {
   const AnalyticCardData = [
@@ -61,22 +62,25 @@ const AdminDashboard = () => {
     }
   ]
   return (
-    <Box sx={{ paddingX: "20px", display: "flex", flexDirection: "column", gap: "20px", }} >
+    <Box sx={{display: "flex", flexDirection: "column", gap: "20px", }} >
       <Box>
-        <Box sx={{ paddingY: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
-          <BreadCrumbs first="app" second="dashboard" third="Admin Dashboard" />
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <Typography style={{ fontWeight: "bold", fontSize: "20px" }} >Welcome Admin ! </Typography>
         </Box>
-        <AnalyticCard AnalyticCardData={AnalyticCardData} />
+        <AnalyticCard AnalyticCardData={AnalyticCardData} />  
       </Box>
       <RevenueSalesGraph />
       <InfoCard AnalyticCardData={infoCardData} />
-      <Box sx={{ width: "100%", display: "flex", justifyContent: "space-between", gap: "20px" }} >
+      <Box sx={{ width: "100%", display: "flex", justifyContent: "space-between", gap: "10px", }} >
         <Statistics />
         <TaskStatistics />
         <TodayAbsent />
       </Box>
       <InvoicePayments />
+      <Stack direction="row" justifyContent="space-between" gap={2} bgcolor="#f3f4f6" >
+        <ClientTable />
+        <RecentProjectsTable />
+      </Stack>
     </Box>
   )
 }

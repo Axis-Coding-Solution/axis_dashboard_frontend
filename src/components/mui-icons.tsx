@@ -16,6 +16,12 @@ import ModeNightIcon from '@mui/icons-material/ModeNight';
 import MarkEmailUnreadOutlinedIcon from '@mui/icons-material/MarkEmailUnreadOutlined';
 import MarkChatUnreadOutlinedIcon from '@mui/icons-material/MarkChatUnreadOutlined';
 import AdjustIcon from '@mui/icons-material/Adjust';
+import HourglassEmptyOutlinedIcon from '@mui/icons-material/HourglassEmptyOutlined';
+import NextWeekOutlinedIcon from '@mui/icons-material/NextWeekOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import StartOutlinedIcon from '@mui/icons-material/StartOutlined';
+import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
+import Groups3Icon from '@mui/icons-material/Groups3';
 export default {
         SpeedTwoToneIcon,
         PeopleAltTwoToneIcon,
@@ -34,6 +40,12 @@ export default {
         ModeNightIcon,
         MarkEmailUnreadOutlinedIcon,
         MarkChatUnreadOutlinedIcon,
-        AdjustIcon
+        AdjustIcon,
+        HourglassEmptyOutlinedIcon,
+        NextWeekOutlinedIcon,
+        HomeOutlinedIcon,
+        StartOutlinedIcon,
+        BusinessOutlinedIcon,
+        Groups3Icon
 };
    

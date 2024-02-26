@@ -5,11 +5,15 @@ import { RoutesType } from "@/definitions/types";
 import Dashboard from "./Dashboard";
 import BlankLayout from "@/layouts/BlankLayout";
 import DashboardLayout from "@/layouts/DashboardLayout";
+import Clients from "./Clients";
+import Projects from "./Project";
 
 const Routes = [
   /// all routes gather here
   ...Authentication,
   ...Dashboard,
+  ...Clients,
+  ...Projects,
 ];
 
 type LayoutsType = {

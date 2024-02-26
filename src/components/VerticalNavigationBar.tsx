@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { NavigationData } from "@/navigation";
 import MuiIcons from "@/components/mui-icons";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Paper, Typography } from "@mui/material";
+import {Box, Paper, Typography } from "@mui/material";
 
 const VerticalNavigationBar = (props: any) => {
     const { open, toggle, setToggle } = props
@@ -11,11 +11,12 @@ const VerticalNavigationBar = (props: any) => {
     return (
         <Paper sx={{
             width: open ? "50px" : "270px",
-            transition: "width 0.5s",
+            transition: "width 0.7s",
             // position: "absolute",
             // left: 0,
-            height: "100%",
+            height: "100vh",
             bgcolor: "white",
+            paddingX: "2px",
 
         }} >
             <Box paddingY={3}>

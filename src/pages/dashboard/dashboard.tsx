@@ -4,7 +4,7 @@ import { useState } from "react";
 import Header from "@/components/header";
 import MainContent from "@/components/main-content";
 import Footer from "@/components/Footer";
-const AdminPanel = () => {
+const Dashboard = () => {
     const [open, setOpen] = useState(false)
     const [toggle, setToggle] = useState(-1)
     return (
@@ -17,7 +17,7 @@ const AdminPanel = () => {
 };
 
 
-export default AdminPanel
+export default Dashboard
 
 
 
@@ -49,7 +49,7 @@ export default AdminPanel
 // import HeaderActivity from "./header-activity";
 // import { GiHamburgerMenu } from "react-icons/gi";
 
-// const AdminPanel = () => {
+// const Dashboard = () => {
 //     const [open, setOpen] = useState(false)
 //     return (
 //         <Box
@@ -154,7 +154,7 @@ export default AdminPanel
 // };
 
 
-// export default AdminPanel
+// export default Dashboard
 
 
 

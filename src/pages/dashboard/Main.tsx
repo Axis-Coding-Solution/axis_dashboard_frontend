@@ -1,7 +1,7 @@
-import AdminPanel from "./admin-test"
+import Dashboard from "./dashboard"
 
 const MainComponent = () => {
-  return  <AdminPanel /> 
+  return  <Dashboard /> 
 }
 
 export default MainComponent

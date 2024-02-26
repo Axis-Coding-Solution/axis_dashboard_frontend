@@ -1,13 +1,13 @@
 import { Paper, Stack, Typography } from '@mui/material'
-import AdminDashboardTable from './component/admin-dashboard-table'
+import InvoiceTable from './component/invoice-table'
+import PaymentsTable from './component/payments-table'
 
 const InvoicePayments = () => {
   return (
-    <Paper sx={{ padding: "0px" }} >
-        <Typography variant='h4' >Invoice Payments</Typography>
+    <Paper sx={{ padding: "0px", width: "100%", bgcolor: "#f3f4f6" }} >
         <Stack gap={3} >
-        <AdminDashboardTable />
-        <AdminDashboardTable />
+        <InvoiceTable />
+        <PaymentsTable />
         </Stack>
     </Paper>
   )

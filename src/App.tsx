@@ -1,17 +1,21 @@
 import { BrowserRouter } from "react-router-dom";
-import { Provider } from "react-redux";
+import { useSelector } from "react-redux";
+import { ThemeProvider } from '@emotion/react'
+
 // ! import main routing file here and use it in the browser router
 import AppRouter from "./router";
 // ! also store main file would be used here too
-import store from "./store";
+import { DarkTheme, LightTheme } from "./material-them";
 
 function App() {
+  const { themeMode } = useSelector((store: any) => store.layout)
   return (
-      <BrowserRouter>
-        <Provider store={store}>
-          <AppRouter />
-        </Provider>
-      </BrowserRouter>
+    <BrowserRouter>
+      <ThemeProvider
+        theme={themeMode === "light" ? LightTheme : DarkTheme} >
+        <AppRouter />
+      </ThemeProvider>
+    </BrowserRouter>
   );
 }
 
