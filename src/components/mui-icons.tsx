@@ -22,6 +22,7 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import StartOutlinedIcon from '@mui/icons-material/StartOutlined';
 import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 import Groups3Icon from '@mui/icons-material/Groups3';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 export default {
         SpeedTwoToneIcon,
         PeopleAltTwoToneIcon,
@@ -46,6 +47,7 @@ export default {
         HomeOutlinedIcon,
         StartOutlinedIcon,
         BusinessOutlinedIcon,
-        Groups3Icon
+        Groups3Icon,
+        MoreVertIcon
 };
    

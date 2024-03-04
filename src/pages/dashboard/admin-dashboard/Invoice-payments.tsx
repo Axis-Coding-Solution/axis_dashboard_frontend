@@ -3,12 +3,17 @@ import InvoiceTable from './component/invoice-table'
 import PaymentsTable from './component/payments-table'
 
 const InvoicePayments = () => {
+  const style = {
+    main: {
+      padding: "0px", width: "100%", bgcolor: "#f3f4f6"
+    }
+  }
   return (
-    <Paper sx={{ padding: "0px", width: "100%", bgcolor: "#f3f4f6" }} >
-        <Stack gap={3} >
+    <Paper sx={style.main}>
+      <Stack gap={3} >
         <InvoiceTable />
         <PaymentsTable />
-        </Stack>
+      </Stack>
     </Paper>
   )
 }

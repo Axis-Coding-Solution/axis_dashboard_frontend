@@ -1,5 +1,5 @@
 import { Avatar, Box, Paper, Typography } from '@mui/material'
-import UserImage from "@/assets/images/avatar-13.jpg"
+import UserImage from "@/assets/images/client.jpg"
 
 const Card = () => {
     const style = {

@@ -14,8 +14,48 @@ export const employees = [
                 path: "/app/employees/all-employee",
             },
             {
-                name: "Add Employee",
-                path: "/app/employees/add-employee",
+                name: "Holidays",
+                path: "/app/employees/holidays",
+            },
+            {
+                name: "Leave ( Admin ) ",
+                path: "/app/employees/admin/leave",
+            },
+            {
+                name: "Leave ( Employee ) ",
+                path: "/app/employees/employee/leave",
+            },
+            {
+                name: "Leave Setting",
+                path: "/app/employees/leave-setting",
+            },
+            {
+                name: "Attendance ( Admin )",
+                path: "/app/employees/admin/attendance",
+            },
+            {
+                name: "Attendance ( Employee )",
+                path: "/app/employees/employee/attendance",
+            },
+            {
+                name:"Department",
+                path:"/app/employees/department"
+            },
+            {
+                name:"Designation",
+                path:"/app/employees/designation"
+            },
+            {
+                name:"TimeSheet",
+                path:"/app/employees/timesheet"
+            },
+            {
+                name:"Shift & Schedule ",
+                path:"/app/employees/shift-schedule"
+            },
+            {
+                name:"Overtime",
+                path:"/app/employees/overtime"
             }
         ]
     },

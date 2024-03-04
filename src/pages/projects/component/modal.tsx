@@ -6,7 +6,7 @@ import Modal from '@mui/material/Modal';
 import { Label, UploadFile } from '@mui/icons-material';
 import { Avatar, Stack, TextField } from '@mui/material';
 import Selector from '@/components/Selector';
-import user from "@/assets/images/avatar-13.jpg"
+import user from "@/assets/images/client.jpg"
 
 const style = {
 

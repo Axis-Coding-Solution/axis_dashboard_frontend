@@ -1,7 +1,8 @@
 import { Box, Paper, Stack, Typography } from '@mui/material'
 import LinearDeterminate from '../component/progess-bar';
-
+import {style} from "../style";
 const Statistics = () => {
+ 
   let data = [
     { name: "Today Leave", current: 4, total: 65 },
     { name: "Pending Invoice", current: 15, total: 92 },
@@ -14,10 +15,10 @@ const Statistics = () => {
       <Typography variant='h4' > Statistics </Typography>
       <Box sx={{ padding: "20px" }} >
         {data.map((item: any, index: number) => (
-          <Box key={index} sx={{ border: "1px solid #e0e0e0", borderRadius: "5px", mb: 2, padding: "10px" }} >
+          <Box key={index} sx={style.statsCard} >
             <Stack direction="row" justifyContent="space-between" gap={2} >
               <Typography> {item.name} </Typography>
-              <Typography variant='h5' sx={{ display: "flex", alignItems: "center", gap: "5px" }} >
+              <Typography variant='h5' sx={ style.progress }>
                 <Typography variant='h4' >
                   {item.current}
                 </Typography>

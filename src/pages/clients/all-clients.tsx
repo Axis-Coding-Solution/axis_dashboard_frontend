@@ -1,13 +1,20 @@
 import Selector from "@/components/Selector"
 import AddClient from "@/components/modal"
-import { Box, Button, TextField } from "@mui/material"
+import { Box,TextField } from "@mui/material"
 import ClientCard from "./components/Card"
 
 const AllClient = () => {
-    const arr = [1, 2, 3, 4,5,6,7,8,9,10]
+    const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    const style = {
+        head: {
+            display: "flex",
+            justifyContent: "space-between",
+            gap: "10px",
+        }
+    }
     return (
         <>
-            <Box sx={{ display: "flex", justifyContent: "space-between", gap: "10px", }} >
+            <Box sx={style.head} >
                 <TextField
                     id="outlined-multiline-flexible"
                     label="Client Id"
@@ -23,7 +30,7 @@ const AllClient = () => {
                     sx={{ width: "100%" }}
 
                 />
-                <Selector title = "Select Company" />
+                <Selector title="Select Company" />
                 <TextField
 
                     id="outlined-multiline-flexible"

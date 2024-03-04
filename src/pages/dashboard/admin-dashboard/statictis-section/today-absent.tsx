@@ -1,6 +1,16 @@
 import { Avatar, Box, Chip, Paper, Stack, Typography } from '@mui/material'
 
 const TodayAbsent = () => {
+    const style = {
+        main: {
+            display: "flex",
+                    flexDirection: " column",
+                    gap: "10px",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: "5px",
+                    padding: "20px",
+        }
+    }
     let martinLewisData = [
         {
             name: "Martin Lewis",
@@ -28,17 +38,8 @@ const TodayAbsent = () => {
     return (
         <Paper>
             <Typography variant='h4' > Today Absent </Typography>
-            {arr.map(() => (
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: " column",
-                    gap: "10px",
-                    border: "1px solid #e0e0e0",
-                    borderRadius: "5px",
-                    padding: "20px",
-                }}
-            >
+            {arr.map(( index: number ) => (
+            <Box sx={ style.main } key={index} >
                 <Stack gap={2} >
                     <Avatar />
                     <Typography variant='h5' > John Doe </Typography>

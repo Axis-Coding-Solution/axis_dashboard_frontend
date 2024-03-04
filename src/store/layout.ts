@@ -16,7 +16,10 @@ const layoutSlice = createSlice({
       state.themeMode = action.payload;
       localStorage.setItem("themeMode", action.payload);
     },
+    setOpen(state, action) {
+      state.open = action.payload
+    }
   },
 });
-export const { setTheme } = layoutSlice.actions;
+export const { setTheme, setOpen } = layoutSlice.actions;
 export default layoutSlice.reducer;

@@ -6,7 +6,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Box, Typography } from '@mui/material';
-
+import { style } from "../style";
 function createData(
     name: string,
     calories: number,
@@ -27,40 +27,40 @@ const rows = [
 
 export default function ClientTable() {
     return (
-        <Paper sx={{ width: "100%", padding: "0px", borderRadius: "10px"}} >
-         <Typography variant="h6" sx={{ fontWeight: "bold", paddingX: "20px", paddingY: "10px"}}> Clients </Typography>
-        <TableContainer sx={{ }} >
-            <Table sx={{minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Dessert (100g serving)</TableCell>
-                        <TableCell align="right">Calories</TableCell>
-                        <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                        <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                        <TableCell align="right">Protein&nbsp;(g)</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map((row) => (
-                        <TableRow
-                            key={row.name}
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                            <TableCell component="th" scope="row">
-                                {row.name}
-                            </TableCell>
-                            <TableCell align="right">{row.calories}</TableCell>
-                            <TableCell align="right">{row.fat}</TableCell>
-                            <TableCell align="right">{row.carbs}</TableCell>
-                            <TableCell align="right">{row.protein}</TableCell>
+        <Paper sx={style.tableCard} >
+            <Typography variant="h6" sx = {style.tableTitle} > Clients </Typography>
+            <TableContainer sx={{}} >
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Dessert (100g serving)</TableCell>
+                            <TableCell align="right">Calories</TableCell>
+                            <TableCell align="right">Fat&nbsp;(g)</TableCell>
+                            <TableCell align="right">Carbs&nbsp;(g)</TableCell>
+                            <TableCell align="right">Protein&nbsp;(g)</TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-        <Box sx={{ padding: "20px", borderTop: "1px solid #000",display: "flex", alignItems: "center", justifyContent: "center" }} >
-        <Typography variant="h5"> View all Clients </Typography>
-        </Box>
+                    </TableHead>
+                    <TableBody>
+                        {rows.map((row) => (
+                            <TableRow
+                                key={row.name}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell component="th" scope="row">
+                                    {row.name}
+                                </TableCell>
+                                <TableCell align="right">{row.calories}</TableCell>
+                                <TableCell align="right">{row.fat}</TableCell>
+                                <TableCell align="right">{row.carbs}</TableCell>
+                                <TableCell align="right">{row.protein}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <Box sx={ style.tableBottomButton} >
+                <Typography variant="h5"> View all Clients </Typography>
+            </Box>
         </Paper>
 
     );

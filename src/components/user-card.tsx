@@ -1,6 +1,7 @@
 import { Avatar, Box, Paper, Typography } from '@mui/material'
-import userImage from "@/assets/images/client.jpg"
-const ClientCard = () => {
+import userImage from "@/assets/images/user.jpg"
+const UserCard = ( props: any ) => {
+    const {} = props
     const styles = {
         card: {
             display:"flex",
@@ -9,6 +10,7 @@ const ClientCard = () => {
             justifyContent:"center",
             alignItems:"center",
             width:"23rem",
+            // width: open ? "25rem" :  "23rem",
         },
         avatar:{
             width:"100px",
@@ -31,23 +33,21 @@ const ClientCard = () => {
              padding:"5px",
              borderRadius:"5px",
         }
-
     }
   return (
     <Paper sx ={styles.card} >
       <Avatar src={userImage} sx = {styles.avatar} />
-      <Typography> Client Name </Typography>
+      <Typography> User Name </Typography>
       <Box sx = {styles.box} >
-      <Typography variant="subtitle1" > Company Name </Typography>
       <Typography variant="subtitle1" > Profession </Typography>
       </Box>
-      <Box sx = {styles.box1} >
+      {/* <Box sx = {styles.box1} >
         <Typography sx = {styles.btn} > Message  </Typography>
         <Typography sx = {styles.btn}  > View Profile </Typography>
-      </Box>
+      </Box> */}
      </Paper>
 
   )
 }
 
-export default ClientCard
+export default UserCard

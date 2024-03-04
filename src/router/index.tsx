@@ -7,6 +7,7 @@ import BlankLayout from "@/layouts/BlankLayout";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import Clients from "./Clients";
 import Projects from "./Project";
+import Employee from "./Employee";
 
 const Routes = [
   /// all routes gather here
@@ -14,6 +15,7 @@ const Routes = [
   ...Dashboard,
   ...Clients,
   ...Projects,
+  ...Employee,
 ];
 
 type LayoutsType = {

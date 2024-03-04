@@ -1,28 +1,22 @@
-import { Box,Paper, Typography } from '@mui/material'
+import { Box, Paper, Stack, Typography } from '@mui/material'
 import LinearDeterminate from './progess-bar'
-
+import { style } from "../style"
 const InfoCard = (props: any) => {
     const { AnalyticCardData } = props
     return (
-        <Box sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            gap: "20px",
-            width: "100%",
-
-        }} >
+        <Stack direction="row" gap={2} >
             {AnalyticCardData && AnalyticCardData.map((item: any, index: number) => (
-                <Paper key={index} sx={{ display: "flex", flexDirection: "column", gap: "10px", }} >
-                    <Box sx={{ display: "flex", justifyContent: "space-between" }} >
-                        <Typography variant='h4' >{item.title}</Typography>
-                        <Typography variant='h4' >{item.percentage}</Typography>
-                    </Box>
+                <Paper key={index} sx={style.infoCard} >
+                    <Stack direction="row" justifyContent="space-between" >
+                        <Typography variant='h4'>{item.title}</Typography>
+                        <Typography variant='h4'>{item.percentage}</Typography>
+                    </Stack>
                     <Typography> {item.value} </Typography>
                     <LinearDeterminate />
-                    <Typography variant='h5' >{item.description}</Typography>
+                    <Typography variant='h5'>{item.description}</Typography>
                 </Paper>
             ))}
-        </Box>
+        </Stack>
     )
 }
 

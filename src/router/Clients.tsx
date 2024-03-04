@@ -1,4 +1,4 @@
-import AddClient from "@/pages/clients/all-client/add-client"
+// import AddClient from "@/pages/clients/all-client/add-client"
 import AllClient from "@/pages/clients/all-clients"
 
 export default [
@@ -10,7 +10,7 @@ export default [
         }
     },
     {
-        element: <AddClient />  ,
+        // element: <AddClient />  ,
         path: "/clients/add-client",
         meta : {
             layout : "default"

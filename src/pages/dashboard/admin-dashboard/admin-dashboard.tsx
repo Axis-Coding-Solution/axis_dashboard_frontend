@@ -10,7 +10,7 @@ import TodayAbsent from "./statictis-section/today-absent"
 import InvoicePayments from "./Invoice-payments"
 import ClientTable from "./component/client-table"
 import RecentProjectsTable from "./reacent-projects-table"
-
+import { style } from "./style";
 const AdminDashboard = () => {
   const AnalyticCardData = [
     {
@@ -62,22 +62,21 @@ const AdminDashboard = () => {
     }
   ]
   return (
-    <Box sx={{display: "flex", flexDirection: "column", gap: "20px", }} >
-      <Box>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <Typography style={{ fontWeight: "bold", fontSize: "20px" }} >Welcome Admin ! </Typography>
-        </Box>
-        <AnalyticCard AnalyticCardData={AnalyticCardData} />  
-      </Box>
+    <Box sx={style.main}>
+      <AnalyticCard AnalyticCardData={AnalyticCardData} />
       <RevenueSalesGraph />
       <InfoCard AnalyticCardData={infoCardData} />
-      <Box sx={{ width: "100%", display: "flex", justifyContent: "space-between", gap: "10px", }} >
+      <Box sx={style.Statistics}>
         <Statistics />
         <TaskStatistics />
         <TodayAbsent />
       </Box>
       <InvoicePayments />
-      <Stack direction="row" justifyContent="space-between" gap={2} bgcolor="#f3f4f6" >
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        gap={2}
+        bgcolor="#f3f4f6" >
         <ClientTable />
         <RecentProjectsTable />
       </Stack>
