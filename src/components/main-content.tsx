@@ -20,7 +20,7 @@ const MainContent = (props: any) => {
                 // height: "100vh",
                 padding: 3,
             }} >
-                <BreadCrumbs first="app" second="dashboard" third="Admin Dashboard" />
+                {/* <BreadCrumbs first="app" second="dashboard" third="Admin Dashboard" /> */}
                 <Outlet />
             </Box>
         </Box>

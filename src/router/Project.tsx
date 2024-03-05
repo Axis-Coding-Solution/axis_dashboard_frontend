@@ -1,10 +1,11 @@
 import AddProject from "@/pages/projects/add-project";
-import AllProjects from "@/pages/projects/all-project";
+import Projects from "@/pages/projects/all-project";
+
 
 export default [
     {
-        element: <AllProjects />,
-        path: "/app/projects/all-projects",
+        element: <Projects />,
+        path: "/app/projects/projects",
         meta : {
             layout : "default"
         }

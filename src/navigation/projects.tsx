@@ -6,8 +6,8 @@ export const projects = [
         icon: <MuiIcons.RocketLaunchOutlinedIcon  />,
         children: [
             {
-                name: "All Projects",
-                path: "/app/projects/all-projects",
+                name: "Projects",
+                path: "/app/projects/projects",
             },
             {
                 name: "Add Project",
