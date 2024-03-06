@@ -10,8 +10,8 @@ export const projects = [
                 path: "/app/projects/projects",
             },
             {
-                name: "Add Project",
-                path: "/app/projects/add-project",
+                name: "Task Board",
+                path: "/app/projects/Task-Board",
             }
         ]
     },

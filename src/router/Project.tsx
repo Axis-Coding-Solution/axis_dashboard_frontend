@@ -1,5 +1,6 @@
-import AddProject from "@/pages/projects/add-project";
+
 import Projects from "@/pages/projects/all-project";
+import TaskBoard from "@/pages/projects/task-board";
 
 
 export default [
@@ -11,8 +12,8 @@ export default [
         }
     },
     {
-        element: <AddProject />,
-        path: "/app/projects/add-project",
+        element: <TaskBoard />,
+        path: "/app/projects/task-board",
         meta : {
             layout : "default"
         }

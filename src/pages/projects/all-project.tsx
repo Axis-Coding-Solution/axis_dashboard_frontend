@@ -12,29 +12,14 @@ const Projects = () => {
     { index: 4, text: "Web Development" },
     { index: 5, text: "Web Development" },
     { index: 6, text: "Web Development" },
-    
-    // { index: 5, text: "text5" },
-    // { index: 6, text: "Text 6" },
-    // { index: 7, text: "Text 7" },
-    // { index: 8, text: "Text 8" },
-    // { index: 9, text: "Text 9" },
   ];
-  // const style = {
-  //     card: {
-  //         display: "flex",
-  //         gap: "10px",
-  //         flexWrap: "wrap"
-  //     },
-  //     box:{
-  //         textAlign:"right"
-  //     }
-  // }
+
   const style = {
     card: {
       display: "flex",
       gap: "10px",
       flexWrap: "wrap",
-      cursor: "pointer"
+      cursor: "pointer",
     },
     box: {
       textAlign: "right",
@@ -52,15 +37,6 @@ const Projects = () => {
           <Card key={index} text={text} />
         ))}
       </Box>
-
-      {/* <Typography variant="h4">projects </Typography>
-            <BreadCrumbs first="app" second="dashboard" third="Admin Dashboard" />
-            <Box sx = {style.box} >
-            <AddProject />
-            </Box>
-            <Box sx={style.card} >
-                {arr.map((index: number) => <Card key={index} />)}
-            </Box> */}
     </>
   );
 };
