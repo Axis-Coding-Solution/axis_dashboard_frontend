@@ -1,99 +1,114 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Table } from "antd";
-import axios from "axios";
 import Breadcrumbs from "../../../components/Breadcrumbs";
 import DeleteModal from "../../../components/modelpopup/DeleteModal";
 import SearchBox from "../../../components/SearchBox";
 import DepartmentModal from "../../../components/modelpopup/DepartmentModal";
-import { base_url } from "../../../base_urls";
+import { DEPARTMENT_MUTATION_KEY, DEPARTMENT_QUERY_KEY, useDeleteDepartment, useGetAllDepartment, useGetByIdDepartment } from "../../../api/hooks/employees/department.ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { errorToast, successToast } from "../../../utils/index.ts";
 
 const Department = () => {
-  const [users, setUsers] = useState([]);
+  const [edit, setUs] = useState("");
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const queryClient = useQueryClient();
+  const { data } = useGetAllDepartment();
+  const { mutateAsync } = useDeleteDepartment();
+  async function deleteDepartment() {
+    try {
+      const response = await mutateAsync(selectedId);
+      queryClient.invalidateQueries({ queryKey: [DEPARTMENT_MUTATION_KEY] });
+      if (response?.success) {
+        successToast(response.message);
+        queryClient.invalidateQueries({ queryKey: [DEPARTMENT_QUERY_KEY] })
+        setDeleteModal(false)
+      }
+    } catch (error) {
+      errorToast(error);
+    }
+  }
 
-  useEffect(() => {
-    axios
-      .get(base_url + "/api/department.json")
-      .then((res) => setUsers(res.data));
-  }, []);
-
-  const userElements = users.map((user, index) => ({
-    key: index,
-    id: user.id,
-    department: user.department,
-  }));
   const columns = [
     {
       title: "#",
-      dataIndex: "id",
-      sorter: (a, b) => a.id.length - b.id.length,
+      dataIndex: "_id",
+      sorter: (a, b) => a._id.length - b._id.length,
       width: "10%",
+      render: (text, record, index) => index + 1,
     },
     {
       title: "Department Name",
-      dataIndex: "department",
-      sorter: (a, b) => a.department.length - b.department.length,
+      dataIndex: "departmentName",
+      sorter: (a, b) => a.departmentName.length - b.departmentName.length,
       width: "80%",
     },
     {
       title: "Action",
       className: "text-end",
-      render: () => (
-        <div className="dropdown dropdown-action text-end">
-          <Link
-            to="#"
-            className="action-icon dropdown-toggle"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i className="material-icons">more_vert</i>
-          </Link>
-          <div className="dropdown-menu dropdown-menu-right">
+      render: (text, record) => {
+        return (
+          <div className="dropdown dropdown-action text-end">
             <Link
-              className="dropdown-item"
               to="#"
-              data-bs-toggle="modal"
-              data-bs-target="#edit_department"
+              className="action-icon dropdown-toggle"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
             >
-              <i className="fa fa-pencil m-r-5" /> Edit
+              <i className="material-icons">more_vert</i>
             </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              data-bs-toggle="modal"
-              data-bs-target="#delete"
-            >
-              <i className="fa fa-trash m-r-5" /> Delete
-            </Link>
+
+            <div className="dropdown-menu dropdown-menu-right">
+              <Link
+                className="dropdown-item"
+                to="#"
+                data-bs-toggle="modal"
+                data-bs-target="#department"
+                onClick={() => setUs(record)}
+              >
+                <i className="fa fa-pencil m-r-5" /> Edit
+              </Link>
+              <Link
+                className="dropdown-item"
+                to="#"
+                onClick={() => {
+                  setSelectedId(record._id); 
+                  setDeleteModal(true); 
+                }}
+              >
+                <i className="fa fa-trash m-r-5" /> Delete
+              </Link>
+            </div>
           </div>
-        </div>
-      ),
-      sorter: (a, b) => a.length - b.length,
+        );
+      },
+      sorter: (a, b) => a.departmentName.length - b.departmentName.length,
       width: "10%",
     },
   ];
+
   return (
     <>
       <div className="page-wrapper">
         <div className="content container-fluid">
-          {/* Page Header */}
           <Breadcrumbs
             maintitle="Department"
             title="Dashboard"
             subtitle="Department"
-            modal="#add_department"
+            modal="#department"
             name="Add Department"
           />
-          {/* /Page Header */}
           <div className="row">
             <div className="col-md-12">
               <div className="table-responsive">
                 <SearchBox />
                 <Table
                   columns={columns}
-                  dataSource={userElements?.length > 0 ? userElements : []}
+                  dataSource={data?.length > 0 ? data : []}
                   className="table-striped"
-                  rowKey={(record) => record.id}
+                  rowKey={(record) => record._id}
+                  locale={{ emptyText: 'No records found' }}
                 />
               </div>
             </div>
@@ -101,8 +116,16 @@ const Department = () => {
         </div>
       </div>
 
-      <DepartmentModal />
-      <DeleteModal Name="Delete Department" />
+      <DepartmentModal id={edit} setUs={setUs} />
+
+      {/* Pass the delete function and selected ID to the DeleteModal */}
+      <DeleteModal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        onDelete={deleteDepartment}
+        name="Delete Department"
+        ID={selectedId}
+      />
     </>
   );
 };

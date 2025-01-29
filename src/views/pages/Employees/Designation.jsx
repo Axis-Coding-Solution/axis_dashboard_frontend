@@ -7,74 +7,96 @@ import DeleteModal from "../../../components/modelpopup/DeleteModal";
 import AddDesingnationModelPopup from "../../../components/modelpopup/AddDesingnationModelPopup";
 import SearchBox from "../../../components/SearchBox";
 import { base_url } from "../../../base_urls";
+import { DSIGNATION_MUTATION_KEY, DSIGNATION_QUERY_KEY, useDeleteDesignation, useGetAllDesignation } from "../../../api/hooks/employees/designations.ts";
+import { errorToast, successToast } from "../../../utils/index.ts";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Designation = () => {
-  const [users, setUsers] = useState([]);
+  const [edit, setEdit] = useState("");
+  const { data } = useGetAllDesignation()
+  const [deleteModal, setDeleteModal] = useState(false);
+  const {mutateAsync}=useDeleteDesignation()
+  const [selectedId, setSelectedId] = useState(null);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    axios
-      .get(base_url + "/api/designation.json")
-      .then((res) => setUsers(res.data));
-  }, []);
-
-  const userElements = users.map((user, index) => ({
-    key: index,
-    id: user.id,
-    department: user.department,
-    designation: user.designation,
-  }));
+    async function deleteDesignation() {
+      try {
+        const response = await mutateAsync(selectedId);
+        queryClient.invalidateQueries({ queryKey: [DSIGNATION_MUTATION_KEY] });
+        if (response?.success) {
+          successToast(response.message);
+          queryClient.invalidateQueries({ queryKey: [DSIGNATION_QUERY_KEY] })
+          setDeleteModal(false)
+        }
+      } catch (error) {
+        errorToast(error);
+      }
+    }
+  
   const columns = [
     {
       title: "#",
-      dataIndex: "id",
-      sorter: (a, b) => a.id.length - b.id.length,
+      dataIndex: "_id",
+      sorter: (a, b) => a._id.length - b._id.length,
       width: "10%",
+      render: (text, record, index) => index + 1,
     },
     {
-      title: "Department",
-      dataIndex: "department",
-      sorter: (a, b) => a.department.length - b.department.length,
+      title: "Department Name",
+      dataIndex: "departmentId",
+      sorter: (a, b) => a.departmentId?.departmentName?.length - b.departmentId?.departmentName?.length,
       width: "40%",
+      render: (departmentId) => departmentId?.departmentName || "NOT SELECTED",
     },
     {
       title: "Designation",
-      dataIndex: "designation",
-      sorter: (a, b) => a.designation.length - b.designation.length,
+      dataIndex: "designationName",
+      sorter: (a, b) => a.designationName.length - b.designationName.length,
       width: "40%",
     },
     {
       title: "Action",
       className: "text-end",
-      render: () => (
-        <div className="dropdown dropdown-action text-end">
-          <Link
-            to="#"
-            className="action-icon dropdown-toggle"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i className="material-icons">more_vert</i>
-          </Link>
-          <div className="dropdown-menu dropdown-menu-right">
+      render: (text, record) => {
+        return (
+
+          <div className="dropdown dropdown-action text-end">
             <Link
-              className="dropdown-item"
               to="#"
-              data-bs-toggle="modal"
-              data-bs-target="#edit_designation"
+              className="action-icon dropdown-toggle"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
             >
-              <i className="fa fa-pencil m-r-5" /> Edit
+              <i className="material-icons">more_vert</i>
             </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              data-bs-toggle="modal"
-              data-bs-target="#delete"
-            >
-              <i className="fa fa-trash m-r-5" /> Delete
-            </Link>
+            <div className="dropdown-menu dropdown-menu-right">
+              <Link
+                className="dropdown-item"
+                to="#"
+                data-bs-toggle="modal"
+                data-bs-target="#designation"
+                onClick={() => setEdit(record)}
+              >
+                <i className="fa fa-pencil m-r-5" /> Edit
+              </Link>
+              <Link
+                className="dropdown-item"
+                to="#"
+                // data-bs-toggle="modal"
+                // data-bs-target="#delete"
+                onClick={() => {
+                  setSelectedId(record._id); 
+                  setDeleteModal(true); 
+                }}
+              >
+                <i className="fa fa-trash m-r-5" /> Delete
+              </Link>
+            </div>
           </div>
-        </div>
-      ),
+        )
+
+      },
+
       sorter: (a, b) => a.length - b.length,
       width: "10%",
     },
@@ -87,8 +109,8 @@ const Designation = () => {
             maintitle="Designations"
             title="Dashboard"
             subtitle="Designations"
-            modal="#add_designation"
-            name="Add  Designation"
+            modal="#designation"
+            name="Add Designation"
           />
           <div className="row">
             <div className="col-md-12">
@@ -96,7 +118,7 @@ const Designation = () => {
                 <SearchBox />
                 <Table
                   columns={columns}
-                  dataSource={userElements?.length > 0 ? userElements : []}
+                  dataSource={data?.length > 0 ? data : []}
                   className="table-striped"
                   rowKey={(record) => record.id}
                 />
@@ -106,8 +128,12 @@ const Designation = () => {
         </div>
       </div>
 
-      <AddDesingnationModelPopup />
-      <DeleteModal Name="Delete Designation" />
+      <AddDesingnationModelPopup editData={edit} setedit={setEdit} />
+      <DeleteModal  isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        onDelete={deleteDesignation}
+        name="Delete Designation"
+        ID={selectedId} />
     </div>
   );
 };

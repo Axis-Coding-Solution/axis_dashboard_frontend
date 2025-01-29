@@ -4,78 +4,46 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Applogo } from "../../../Routes/ImagePath";
 import { Controller, useForm } from "react-hook-form";
-import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup/dist/yup.js";
-import { useDispatch } from "react-redux";
-import { login } from "../../../user";
-import { resetFunctionwithlogin } from "../../../components/ResetFunction";
-// import { login } from "../../../user";
+import { useUserLoginMutation } from "../../../api/hooks/auth/index.ts";
+import { useAuth } from "../../../utils/hooks/user-auth.ts";
+import { errorToast, successToast } from "../../../utils/index.ts";
+import { loginInitialValues } from "../../../utils/constants/auth.ts";
+import { loginSchema } from "../../../utils/validation-schemas/auth.ts";
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string()
-    .email("Please enter a valid email address")
-    .required("Email is required"),
-  password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
-    .max(20, "Password must be at most 20 characters")
-    .required("Password is required"),
-});
+
 
 const Login = () => {
   const details = localStorage.getItem("loginDetails");
-
-  const loginData = JSON.parse(details);
-
+  const navigate = useNavigate();
+  const auth = useAuth();
+  const { mutateAsync } = useUserLoginMutation()
   const {
-    register,
     control,
     setValue,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(validationSchema),
+    defaultValues: (loginInitialValues),
+    resolver: yupResolver(loginSchema),
   });
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [emailError, setEmailError] = useState(false);
 
-  // const onSubmit = (data) => {
-  //   const currentUser = loginData?.find((item) => item?.email === data?.email);
-  //   if (!currentUser) {
-  //     setEmailError(true); // Email is not registered
-  //     navigate("/");
-  //   } else if (currentUser.password === data?.password) {
-  //     setEmailError(false); // Email is registered, and password is correct
-  //     const Value = {
-  //       email: data?.email,
-  //       password: data?.password,
-  //     };
-  //     dispatch(login(Value));
-  //     localStorage.setItem("credencial", JSON.stringify(Value));
-  //     navigate("/admin-dashboard");
-  //     resetFunctionwithlogin();
-  //   } else {
-  //     setEmailError(true); // Email is registered, but the password is incorrect
-  //     navigate("/");
-  //   }
-  // };
 
-  function refreshPage() {
-    window.location.reload(false);
+  const onSubmit = async (data) => {
+    try {
+      const response = await mutateAsync(data)
+      const { token, findUser } = response.data;
+      console.log(response.data);
+      
+      auth?.handleLogin({ token, findUser });
+      localStorage.setItem('token', token)
+      successToast(response.message);
+      navigate('/admin-dashboard');
+    } catch (error) {
+
+        errorToast('Wrong Email or Password.');
+    }
   }
-
-  const onSubmit = () => {
-    localStorage.setItem("colorschema", "orange");
-    localStorage.setItem("layout", "vertical");
-    localStorage.setItem("layoutwidth", "fixed");
-    localStorage.setItem("layoutpos", "fluid");
-    localStorage.setItem("topbartheme", "light");
-    localStorage.setItem("layoutSized", "lg");
-    localStorage.setItem("layoutStyling", "default");
-    localStorage.setItem("layoutSidebarStyle", "dark");
-
-    navigate("/admin-dashboard");
-  };
 
   useEffect(() => {
     setValue("email", localStorage.getItem("email"));
@@ -116,15 +84,14 @@ const Login = () => {
                         <Controller
                           name="email"
                           control={control}
-                          render={({ field }) => (
+                          render={({ field: { value, onChange } }) => (
                             <input
-                              className={`form-control ${
-                                errors?.email ? "error-input" : ""
-                              }`}
+                              className={`form-control ${errors?.email ? "error-input" : ""
+                                }`}
                               type="text"
                               defaultValue={localStorage.getItem("email")}
-                              onChange={field.onChange}
-                              value={field.value}
+                              onChange={onChange}
+                              value={value}
                               autoComplete="true"
                             />
                           )}
@@ -150,16 +117,14 @@ const Login = () => {
                           <Controller
                             name="password"
                             control={control}
-                            render={({ field }) => (
+                            render={({ field: { value, onChange } }) => (
                               <input
-                                className={`form-control ${
-                                  errors?.password ? "error-input" : ""
-                                }`}
+                                className={`form-control ${errors?.password ? "error-input" : ""
+                                  }`}
                                 type={eye ? "password" : "text"}
                                 defaultValue={localStorage.getItem("password")}
-                                value={field.value}
-                                onChange={field.onChange}
-                                // autoComplete="true"
+                                value={value}
+                                onChange={onChange}
                               />
                             )}
                           />
@@ -170,9 +135,8 @@ const Login = () => {
                               top: "30%",
                             }}
                             onClick={onEyeClick}
-                            className={`fa-solid ${
-                              eye ? "fa-eye-slash" : "fa-eye"
-                            } `}
+                            className={`fa-solid ${eye ? "fa-eye-slash" : "fa-eye"
+                              } `}
                           />
                         </div>
                         <span className="text-danger">
@@ -189,7 +153,7 @@ const Login = () => {
                         </button>
                       </div>
                     </form>
-                    <div className="account-footer">
+                    <div className="account-footer">  
                       <p>
                         Don't have an account yet?{" "}
                         <Link to="/register">Register</Link>

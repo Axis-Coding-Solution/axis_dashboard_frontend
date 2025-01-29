@@ -4,7 +4,7 @@
 
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import notifications from "../../assets/json/notifications";
 import message from "../../assets/json/message";
 import {
@@ -21,6 +21,8 @@ import { FaRegBell, FaRegComment } from "react-icons/fa";
 import { useLocation } from "react-router-dom/dist";
 import { useTranslation } from "react-i18next";
 import i18n from "../../i18n";
+import { useAuth } from "../../utils/hooks/user-auth.ts";
+import { successToast } from "../../utils/index.ts";
 
 const Header = (props) => {
   const data = notifications.notifications;
@@ -90,12 +92,21 @@ const Header = (props) => {
     );
   };
 
+  const auth = useAuth();
+
+  const navigate = useNavigate();
+
+  const handleLoyout = () => {
+    auth?.handleLogout();
+    successToast('Logout successfully!');
+  }
+
   return (
     <div className="header" style={{ right: "0px" }}>
       {/* Logo */}
       <div className="header-left">
         <Link to="/admin-dashboard" className="logo">
-          <img src={headerlogo}  alt="img" />
+          <img src={headerlogo} alt="img" />
         </Link>
         <Link to="/admin-dashboard" className="logo2">
           <img src={Applogo} width={40} height={40} alt="img" />
@@ -363,7 +374,7 @@ const Header = (props) => {
             <Link className="dropdown-item" to="/settings/companysetting">
               Settings
             </Link>
-            <Link className="dropdown-item" to="/">
+            <Link className="dropdown-item" onClick={handleLoyout} to="/react/template" >
               Logout
             </Link>
           </div>
