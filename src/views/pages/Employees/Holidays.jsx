@@ -8,50 +8,60 @@ import { Link } from "react-router-dom";
 import DeleteModal from "../../../components/modelpopup/DeleteModal";
 import Breadcrumbs from "../../../components/Breadcrumbs";
 import { base_url } from "../../../base_urls";
+import { HOLIDAY_MUTATION_KEY, HOLIDAY_QUERY_KEY, useDeleteHoliday, useGetAllHoliday } from "../../../api/hooks/employees/holiday.ts";
+import { errorToast, successToast } from "../../../utils/index.ts";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Holidays = () => {
-  const [users, setUsers] = useState([]);
+  const { data } = useGetAllHoliday();
+  const [edit, setUs] = useState("");
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useDeleteHoliday();
+  async function deleteEmployee() {
+    try {
+      const response = await mutateAsync(selectedId);
+      queryClient.invalidateQueries({ queryKey: [HOLIDAY_MUTATION_KEY] });
+      if (response?.success) {
+        successToast(response.message);
+        queryClient.invalidateQueries({ queryKey: [HOLIDAY_QUERY_KEY] })
+        setDeleteModal(false)
+      }
+    } catch (error) {
+      errorToast(error);
+    }
+  }
 
-  useEffect(() => {
-    axios.get(base_url + "/api/holiday.json").then((res) => setUsers(res.data));
-  }, []);
-
-  const userElements = users.map((user, index) => ({
-    key: index,
-    id: user.id,
-    Title: user.Title,
-    HolidayDate: user.HolidayDate,
-    Day: user.Day,
-  }));
 
   const columns = [
     {
       title: "#",
-      dataIndex: "id",
-      render: (text) => <span>{text}</span>,
-      sorter: (a, b) => a.id - b.id,
-    },
+      render: (text, record, index) => <span>{index + 1}</span>,
+    }
+    ,
     {
       title: "Title",
-      dataIndex: "Title",
+      dataIndex: "holidayName",
       render: (text) => <span>{text}</span>,
       sorter: (a, b) => a.Title.length - b.Title.length,
     },
     {
       title: "HolidayDate",
-      dataIndex: "HolidayDate",
-      render: (text) => <span>{text}</span>,
-      sorter: (a, b) => a.HolidayDate.length - b.HolidayDate.length,
+      dataIndex: "holidayDate",
+      render: (text) => <span>{text ? text.split("T")[0] : ""}</span>,
+      sorter: (a, b) => new Date(a.holidayDate) - new Date(b.holidayDate),
     },
+
     {
       title: "Day",
-      dataIndex: "Day",
+      dataIndex: "day",
       render: (text) => <span>{text}</span>,
       sorter: (a, b) => a.Day.length - b.Day.length,
     },
     {
       title: "Action",
-      render: () => (
+      render: (record) => (
         <div className="dropdown dropdown-action ">
           <Link
             to="#"
@@ -66,15 +76,18 @@ const Holidays = () => {
               className="dropdown-item"
               to="#"
               data-bs-toggle="modal"
-              data-bs-target="#edit_holiday"
+              data-bs-target="#add_holiday"
+              onClick={() => setUs(record)}
             >
               <i className="fa fa-pencil m-r-5" /> Edit
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              data-bs-toggle="modal"
-              data-bs-target="#delete"
+              onClick={() => {
+                setSelectedId(record._id);
+                setDeleteModal(true);
+              }}
             >
               <i className="fa-regular fa-trash-can m-r-5" /> Delete
             </Link>
@@ -104,9 +117,10 @@ const Holidays = () => {
               <div className="table-responsive">
                 <Table
                   columns={columns}
-                  dataSource={userElements?.length > 0 ? userElements : []}
+                  dataSource={data?.length > 0 ? data : []}
                   className="table-striped"
                   rowKey={(record) => record.id}
+                  locale={{ emptyText: 'No records found' }}
                 />
               </div>
             </div>
@@ -114,8 +128,14 @@ const Holidays = () => {
         </div>
         {/* /Page Content */}
       </div>
-      <AddHoliday />
-      <DeleteModal Name="Delete Holiday" />
+      <AddHoliday id={edit} setUs={setUs}/>
+      <DeleteModal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        onDelete={deleteEmployee}
+        name="Delete Holiday"
+        ID={selectedId}
+      />
     </>
   );
 };

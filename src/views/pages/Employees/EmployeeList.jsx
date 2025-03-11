@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Avatar_02,
   Avatar_05,
@@ -15,101 +15,50 @@ import Breadcrumbs from "../../../components/Breadcrumbs";
 import AllEmployeeAddPopup from "../../../components/modelpopup/AllEmployeeAddPopup";
 import DeleteModal from "../../../components/modelpopup/DeleteModal";
 import SearchBox from "../../../components/SearchBox";
+import { EMPLOYEE_MUTATION_KEY, EMPLOYEE_QUERY_KEY, useDeleteEmployee, useGetAllEmployee } from "../../../api/hooks/employees/allEmployee.ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { errorToast, successToast } from "../../../utils/index.ts";
 
 const EmployeeList = () => {
-  const data = [
-    {
-      id: 1,
-      image: Avatar_02,
-      name: "John Doe",
-      role: "Web Designer",
-      employee_id: "FT-0001",
-      email: "johndoe@example.com",
-      mobile: "9876543210",
-      joindate: "1 Jan 2023",
-    },
-    {
-      id: 2,
-      image: Avatar_05,
-      name: "Richard Miles",
-      role: "Web Developer",
-      employee_id: "FT-0002",
-      email: "richardmiles@example.com",
-      mobile: "9876543210",
-      joindate: "18 Mar 2014",
-    },
-    {
-      id: 3,
-      image: Avatar_11,
-      name: "John Smith",
-      role: "Android Developer",
-      employee_id: "FT-0003",
-      email: "johnsmith@example.com	",
-      mobile: "9876543210",
-      joindate: "1 Apr 2014",
-    },
-    {
-      id: 4,
-      image: Avatar_12,
-      name: "Mike Litorus",
-      role: "IOS Developer",
-      employee_id: "FT-0004",
-      email: "mikelitorus@example.com",
-      mobile: "9876543210",
-      joindate: "1 Apr 2014",
-    },
-    {
-      id: 5,
-      image: Avatar_09,
-      name: "Wilmer Deluna",
-      role: "Team Leader",
-      employee_id: "FT-0005",
-      email: "wilmerdeluna@example.com",
-      mobile: "9876543210",
-      joindate: "22 May 2014",
-    },
-    {
-      id: 6,
-      image: Avatar_10,
-      name: "Jeffrey Warden",
-      role: "Web Developer",
-      employee_id: "FT-0006",
-      email: "jeffreywarden@example.com",
-      mobile: "9876543210",
-      joindate: "16 Jun 2023",
-    },
-    {
-      id: 7,
-      image: Avatar_13,
-      name: "Bernardo Galaviz",
-      role: "Web Developer",
-      employee_id: "FT-0007",
-      email: "bernardogalaviz@example.com",
-      mobile: "9876543210",
-      joindate: "1 Jan 2023",
-    },
-  ];
-
+  const {data} = useGetAllEmployee();
+  const [edit, setUs] = useState("");
+   const [deleteModal, setDeleteModal] = useState(false);
+   const [selectedId, setSelectedId] = useState(null);
+   const { mutateAsync } = useDeleteEmployee();
+   const queryClient = useQueryClient();
+   async function deleteEmployee() {
+       try {
+         const response = await mutateAsync(selectedId);
+         queryClient.invalidateQueries({ queryKey: [EMPLOYEE_MUTATION_KEY] });
+         if (response?.success) {
+           successToast(response.message);
+           queryClient.invalidateQueries({ queryKey: [EMPLOYEE_QUERY_KEY] })
+           setDeleteModal(false)
+         }
+       } catch (error) {
+         errorToast(error);
+       }
+     }
   const columns = [
     {
       title: "Name",
-      dataIndex: "name",
+      dataIndex: "firstName",
       render: (text, record) => (
         <span className="table-avatar">
           <Link to="/profile" className="avatar">
             <img alt="" src={record.image} />
           </Link>
           <Link to="/profile">
-            {text} <span>{record.role}</span>
+            {text} <span>{record?.designationId?.designationName}</span>
           </Link>
         </span>
       ),
       sorter: (a, b) => a.name.length - b.name.length,
-    },
+    },    
     {
       title: "Employee ID",
-      dataIndex: "employee_id",
-      sorter: (a, b) => a.employee_id.length - b.employee_id.length,
+      dataIndex: "employeeId",
+      sorter: (a, b) => a.employeeId.length - b.employeeId.length,
     },
 
     {
@@ -120,15 +69,17 @@ const EmployeeList = () => {
 
     {
       title: "Mobile",
-      dataIndex: "mobile",
-      sorter: (a, b) => a.mobile.length - b.mobile.length,
+      dataIndex: "phone",
+      sorter: (a, b) => a.phone.length - b.phone.length,
     },
 
     {
       title: "Join Date",
-      dataIndex: "joindate",
-      sorter: (a, b) => a.joindate.length - b.joindate.length,
+      dataIndex: "joiningDate",
+      sorter: (a, b) => new Date(a.joiningDate) - new Date(b.joiningDate),
+      render: (date) => date.split("T")[0],
     },
+    
     {
       title: "Role",
       sorter: true,
@@ -162,7 +113,7 @@ const EmployeeList = () => {
     {
       title: "Action",
       sorter: true,
-      render: () => (
+      render: (text, record) => (
         <div className="dropdown dropdown-action text-end">
           <Link
             to="#"
@@ -177,15 +128,18 @@ const EmployeeList = () => {
               className="dropdown-item"
               to="#"
               data-bs-toggle="modal"
-              data-bs-target="#edit_employee"
+              data-bs-target="#add_employee"
+              onClick={() => setUs(record)}
             >
               <i className="fa fa-pencil m-r-5" /> Edit
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              data-bs-toggle="modal"
-              data-bs-target="#delete_employee"
+              onClick={() => {
+                setSelectedId(record._id); 
+                setDeleteModal(true); 
+              }}
             >
               <i className="fa fa-trash m-r-5" /> Delete
             </Link>
@@ -220,14 +174,21 @@ const EmployeeList = () => {
                   columns={columns}
                   dataSource={data}
                   rowKey={(record) => record.id}
+                  locale={{ emptyText: 'No records found' }}
                 />
               </div>
             </div>
           </div>
         </div>
         {/* /Page Content */}
-        <AllEmployeeAddPopup />
-        <DeleteModal Name="Delete Employee" />
+        <AllEmployeeAddPopup id={edit} setUs={setUs}/>
+        <DeleteModal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        onDelete={deleteEmployee}
+        name="Delete Employee"
+        ID={selectedId}
+      />
       </div>
     </div>
   );

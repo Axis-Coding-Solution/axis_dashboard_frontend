@@ -38,6 +38,7 @@ const DepartmentModal = ({ id, setUs }) => {
         response = await editDepartment({ id: id?._id, departmentName: data?.departmentName });
         reset()
       }
+      console.log(response,'------------response------------');
       if (response?.success) {
         successToast(response.message);
         queryClient.invalidateQueries({ queryKey: [DEPARTMENT_QUERY_KEY] })
@@ -49,7 +50,6 @@ const DepartmentModal = ({ id, setUs }) => {
       errorToast('User is not eligible to access this resource');
     }
   }
-
 
 
   return (

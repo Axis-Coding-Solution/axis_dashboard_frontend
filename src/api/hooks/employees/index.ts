@@ -1,2 +1,5 @@
 export * from './department.ts'
 export * from './designations.ts'
+export * from './allEmployee.ts'
+export * from './holiday.ts'
+export * from './overTime.ts'

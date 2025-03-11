@@ -8,6 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { designationSchema } from "../../utils/validation-schemas/designations.ts";
 import { errorToast, successToast } from "../../utils/index.ts";
 import { useQueryClient } from "@tanstack/react-query";
+import { ErrorText } from "../common/error-text.tsx";
 
 const AddDesingnationModelPopup = ({ editData, setedit }) => {
   const { data } = useGetAllDepartment();
@@ -20,7 +21,8 @@ const AddDesingnationModelPopup = ({ editData, setedit }) => {
   }));
   const { register, handleSubmit, reset, setValue, formState: { errors, isValid, isSubmitting } } = useForm({
     defaultValues: designationInitialValues,
-    // resolver: yupResolver(designationSchema)
+    resolver: yupResolver(designationSchema),
+    mode: "onChange",
   });
   useEffect(() => {
     if (editData) {
@@ -98,11 +100,15 @@ const AddDesingnationModelPopup = ({ editData, setedit }) => {
             </div>
             <div className="modal-body">
               <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="input-block mb-3">
-                  <label className="col-form-label">Designation Name <span className="text-danger">*</span></label>
-                  <input className="form-control" {...register("designationName")} type="text" />
-
+                <div>
+                  <div className="input-block mb-3">
+                    <label className="col-form-label">Designation Name <span className="text-danger">*</span></label>
+                    <input className="form-control" {...register("designationName")} type="text" />
+                  </div>
+                 <ErrorText error={errors.designationName?.message}/>
                 </div>
+                <div>
+
                 <div className="input-block mb-3">
                   <label className="col-form-label">Department <span className="text-danger">*</span></label>
                   <Select
@@ -113,6 +119,7 @@ const AddDesingnationModelPopup = ({ editData, setedit }) => {
                     onChange={setSelectedDepartment}
                   />
 
+                </div>
                 </div>
                 <div className="submit-section">
                   <button className="btn btn-primary submit-btn" type="submit" aria-label="Close" data-bs-dismiss="modal" >

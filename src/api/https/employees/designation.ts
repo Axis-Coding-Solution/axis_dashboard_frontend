@@ -19,7 +19,7 @@
   export const getAllDesignation = async () => {
       try {
         const res = await GET_API(url);
-        return res?.data?.data;
+        return res?.data?.data?.data;
       } catch (error: any) {
         return apiErrorHandler(error);
       }

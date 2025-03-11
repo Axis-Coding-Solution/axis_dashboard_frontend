@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Avatar_02, Avatar_09 } from "../../../Routes/ImagePath";
 import { Table } from "antd";
@@ -6,8 +6,29 @@ import Breadcrumbs from "../../../components/Breadcrumbs";
 import SearchBox from "../../../components/SearchBox";
 import AddOverTime from "../../../components/modelpopup/AddOverTime";
 import DeleteModal from "../../../components/modelpopup/DeleteModal";
-
+import { OVERTIME_MUTATION_KEY, OVERTIME_QUERY_KEY, useDeleteOvertime, useGetAllOvertime } from "../../../api/hooks/employees/overTime.ts";
+import { errorToast, successToast } from "../../../utils/index.ts";
+import { useQueryClient } from "@tanstack/react-query";
 const OverTime = () => {
+  const { data } = useGetAllOvertime();
+  const [edit, setUs] = useState("");
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const { mutateAsync } = useDeleteOvertime();
+  const queryClient = useQueryClient();
+  async function deleteOverTime() {
+         try {
+           const response = await mutateAsync(selectedId);
+           queryClient.invalidateQueries({ queryKey: [OVERTIME_MUTATION_KEY] });
+           if (response?.success) {
+             successToast(response.message);
+             queryClient.invalidateQueries({ queryKey: [OVERTIME_QUERY_KEY] })
+             setDeleteModal(false)
+           }
+         } catch (error) {
+           errorToast(error);
+         }
+       }
   const statsData = [
     {
       title: "Overtime Employee",
@@ -28,51 +49,44 @@ const OverTime = () => {
       value: 5,
     },
   ];
-  const data = [
-    {
-      id: 1,
-      image: Avatar_02,
-      name: "John Doe",
-      role: "Web Designer",
-      description: "Lorem ipsum dollar",
-      ottype: "Normal day OT 1.5x",
-      othours: "2",
-      otdate: "1 Jan 2023",
-      apimage: Avatar_09,
-      approvedby: "Richard Miles",
-      status: "New",
-    },
-  ];
-
   const columns = [
     {
       title: "#",
-      dataIndex: "id",
-      sorter: (a, b) => a.id.length - b.id.length,
+      render: (text, record, index) => <span>{index + 1}</span>,
     },
     {
       title: "Name",
-      dataIndex: "name",
-      render: (text, record) => (
-        <span className="table-avatar">
-          <Link to="/profile" className="avatar">
-            <img alt="" src={record.image} />
-          </Link>
-          <Link to="/profile">{text}</Link>
-        </span>
-      ),
-      sorter: (a, b) => a.name.length - b.name.length,
+      dataIndex: "firstName",
+      render: (text, record) => {
+        const firstName = record.employeeId?.firstName || "";
+        const lastName = record.employeeId?.lastName || "";
+        return (
+          <span className="table-avatar">
+            {/* <Link to="/profile" className="avatar">
+              <img alt="" src={record.employeeId?.image} />
+            </Link> */}
+            <Link to="/profile">{`${firstName} ${lastName}`}</Link>
+          </span>
+        );
+      },
+      sorter: (a, b) => {
+        const nameA = `${a.employeeId?.firstName || ""} ${a.employeeId?.lastName || ""}`;
+        const nameB = `${b.employeeId?.firstName || ""} ${b.employeeId?.lastName || ""}`;
+        return nameA.localeCompare(nameB);
+      },
     },
+
     {
       title: "OT Date",
-      dataIndex: "otdate",
-      sorter: (a, b) => a.otdate.length - b.otdate.length,
+      dataIndex: "overtimeDate",
+      sorter: (a, b) => new Date(a.overtimeDate) - new Date(b.overtimeDate),
+      render: (date) => date.split("T")[0],
     },
 
     {
       title: "OT Hours",
-      dataIndex: "othours",
-      sorter: (a, b) => a.othours.length - b.othours.length,
+      dataIndex: "overtimeHours",
+      sorter: (a, b) => a.overtimeHours.length - b.overtimeHours.length,
     },
 
     {
@@ -89,28 +103,29 @@ const OverTime = () => {
     {
       title: "Status",
       dataIndex: "status",
-      render: (text) => (
-        <div className="dropdown action-label text-center">
-          <Link
-            className="btn btn-white btn-sm btn-rounded "
-            to="#"
-            aria-expanded="false"
-          >
-            <i
-              className={
-                text === "New"
-                  ? "far fa-dot-circle text-purple"
-                  : text === "Pending"
-                  ? "far fa-dot-circle text-info"
-                  : text === "Approved"
-                  ? "far fa-dot-circle text-success"
-                  : "far fa-dot-circle text-danger"
-              }
-            />{" "}
-            {text}
-          </Link>
-        </div>
-      ),
+      sorter: (a, b) => a.status.length - b.status.length,
+      // render: (text) => (
+      //   <div className="dropdown action-label text-center">
+      //     <Link
+      //       className="btn btn-white btn-sm btn-rounded "
+      //       to="#"
+      //       aria-expanded="false"
+      //     >
+      //       <i
+      //         className={
+      //           text === "New"
+      //             ? "far fa-dot-circle text-purple"
+      //             : text === "Pending"
+      //             ? "far fa-dot-circle text-info"
+      //             : text === "Approved"
+      //             ? "far fa-dot-circle text-success"
+      //             : "far fa-dot-circle text-danger"
+      //         }
+      //       />{" "}
+      //       {text}
+      //     </Link>
+      //   </div>
+      // ),
     },
 
     {
@@ -128,7 +143,7 @@ const OverTime = () => {
     },
     {
       title: "Action",
-      render: () => (
+      render: (record) => (
         <div className="dropdown dropdown-action text-end">
           <Link
             to="#"
@@ -143,15 +158,18 @@ const OverTime = () => {
               className="dropdown-item"
               to="#"
               data-bs-toggle="modal"
-              data-bs-target="#edit_overtime"
+              data-bs-target="#add_overtime"
+              onClick={() => setUs(record)}
             >
               <i className="fa fa-pencil m-r-5" /> Edit
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              data-bs-toggle="modal"
-              data-bs-target="#delete"
+              onClick={() => {
+                setSelectedId(record._id);
+                setDeleteModal(true);
+              }}
             >
               <i className="fa fa-trash m-r-5" /> Delete
             </Link>
@@ -196,6 +214,7 @@ const OverTime = () => {
                   columns={columns}
                   dataSource={data}
                   rowKey={(record) => record.id}
+                  locale={{ emptyText: 'No records found' }}
                 />
               </div>
             </div>
@@ -203,8 +222,14 @@ const OverTime = () => {
         </div>
         {/* /Page Content */}
       </div>
-      <AddOverTime />
-      <DeleteModal Name="Delete Overtime" />
+      <AddOverTime id={edit} setUs={setUs}/>
+      <DeleteModal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        onDelete={deleteOverTime}
+        name="Delete Overtime"
+        ID={selectedId}
+      />
     </>
   );
 };

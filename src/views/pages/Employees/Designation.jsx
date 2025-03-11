@@ -14,6 +14,8 @@ import { useQueryClient } from "@tanstack/react-query";
 const Designation = () => {
   const [edit, setEdit] = useState("");
   const { data } = useGetAllDesignation()
+  console.log(data,'66666666666666666');
+  
   const [deleteModal, setDeleteModal] = useState(false);
   const {mutateAsync}=useDeleteDesignation()
   const [selectedId, setSelectedId] = useState(null);
