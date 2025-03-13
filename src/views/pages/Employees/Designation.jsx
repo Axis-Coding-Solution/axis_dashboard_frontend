@@ -13,28 +13,38 @@ import { useQueryClient } from "@tanstack/react-query";
 
 const Designation = () => {
   const [edit, setEdit] = useState("");
-  const { data } = useGetAllDesignation()
-  console.log(data,'66666666666666666');
-  
   const [deleteModal, setDeleteModal] = useState(false);
-  const {mutateAsync}=useDeleteDesignation()
-  const [selectedId, setSelectedId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const queryClient = useQueryClient();
+  const { data: designationResponse, isLoading } = useGetAllDesignation(currentPage, pageSize);
+  const designations = designationResponse?.data || [];
+  const paginationInfo = designationResponse?.pagination || {};
+  const handleTableChange = (page, newPageSize) => {
+    setCurrentPage(page);
+  };
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
 
-    async function deleteDesignation() {
-      try {
-        const response = await mutateAsync(selectedId);
-        queryClient.invalidateQueries({ queryKey: [DSIGNATION_MUTATION_KEY] });
-        if (response?.success) {
-          successToast(response.message);
-          queryClient.invalidateQueries({ queryKey: [DSIGNATION_QUERY_KEY] })
-          setDeleteModal(false)
-        }
-      } catch (error) {
-        errorToast(error);
+  const { mutateAsync } = useDeleteDesignation();
+  const [selectedId, setSelectedId] = useState(null);
+
+  async function deleteDesignation() {
+    try {
+      const response = await mutateAsync(selectedId);
+      queryClient.invalidateQueries({ queryKey: [DSIGNATION_MUTATION_KEY] });
+      if (response?.success) {
+        successToast(response.message);
+        queryClient.invalidateQueries({ queryKey: [DSIGNATION_QUERY_KEY] });
+        setDeleteModal(false);
       }
+    } catch (error) {
+      errorToast(error);
     }
-  
+  }
+
   const columns = [
     {
       title: "#",
@@ -46,7 +56,7 @@ const Designation = () => {
     {
       title: "Department Name",
       dataIndex: "departmentId",
-      sorter: (a, b) => a.departmentId?.departmentName?.length - b.departmentId?.departmentName?.length,
+      sorter: (a, b) => (a.departmentId?.departmentName || "").length - (b.departmentId?.departmentName || "").length,
       width: "40%",
       render: (departmentId) => departmentId?.departmentName || "NOT SELECTED",
     },
@@ -61,7 +71,6 @@ const Designation = () => {
       className: "text-end",
       render: (text, record) => {
         return (
-
           <div className="dropdown dropdown-action text-end">
             <Link
               to="#"
@@ -84,25 +93,22 @@ const Designation = () => {
               <Link
                 className="dropdown-item"
                 to="#"
-                // data-bs-toggle="modal"
-                // data-bs-target="#delete"
                 onClick={() => {
-                  setSelectedId(record._id); 
-                  setDeleteModal(true); 
+                  setSelectedId(record._id);
+                  setDeleteModal(true);
                 }}
               >
                 <i className="fa fa-trash m-r-5" /> Delete
               </Link>
             </div>
           </div>
-        )
-
+        );
       },
-
       sorter: (a, b) => a.length - b.length,
       width: "10%",
     },
   ];
+
   return (
     <div>
       <div className="page-wrapper">
@@ -117,12 +123,22 @@ const Designation = () => {
           <div className="row">
             <div className="col-md-12">
               <div className="table-responsive">
-                <SearchBox />
+                <SearchBox pageSize={pageSize} onPageSizeChange={handlePageSizeChange} />
                 <Table
                   columns={columns}
-                  dataSource={data?.length > 0 ? data : []}
+                  dataSource={designations}
                   className="table-striped"
-                  rowKey={(record) => record.id}
+                  rowKey={(record) => record._id}
+                  loading={isLoading}
+                  locale={{ emptyText: "No records found" }}
+                  pagination={{
+                    current: paginationInfo.currentPage || currentPage,
+                    pageSize: paginationInfo.itemsPerPage || pageSize,
+                    total: paginationInfo.totalItems || 0,
+                    showSizeChanger: false,
+                    showQuickJumper: true,
+                    onChange: handleTableChange,
+                  }}
                 />
               </div>
             </div>
@@ -131,11 +147,13 @@ const Designation = () => {
       </div>
 
       <AddDesingnationModelPopup editData={edit} setedit={setEdit} />
-      <DeleteModal  isOpen={deleteModal}
+      <DeleteModal
+        isOpen={deleteModal}
         onClose={() => setDeleteModal(false)}
         onDelete={deleteDesignation}
         name="Delete Designation"
-        ID={selectedId} />
+        ID={selectedId}
+      />
     </div>
   );
 };

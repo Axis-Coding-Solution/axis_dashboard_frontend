@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Table } from "antd";
 import {
@@ -16,170 +16,114 @@ import { ClientModelPopup } from "../../../components/modelpopup/ClientModelPopu
 import SearchBox from "../../../components/SearchBox";
 import Breadcrumbs from "../../../components/Breadcrumbs";
 import ClientsFilter from "../../../components/ClientsFilter";
+import { CLIENT_MUTATION_KEY, CLIENT_QUERY_KEY, useDeleteClient, useGetAllClient } from "../../../api/hooks/client/index.ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { errorToast, successToast } from "../../../utils/index.ts";
 
 const ClientList = () => {
-  const data = [
-    {
-      id: 1,
-      Name: "Carlson Tech",
-      ClientId: "CLT-0008",
-      ContactPerson: "Betty Carlson",
-      Email: "bettycarlson@example.com",
-      Mobile: "9876543210",
-      Class: "fa-regular fa-circle-dot text-danger",
-      Status: "Inactive",
-      Image: Avatar_22,
-    },
-    {
-      id: 2,
-      Name: "Cream Inc",
-      ClientId: "CLT-0003",
-      ContactPerson: "Ruby Bartlett",
-      Email: "rubybartlett@example.com",
-      Mobile: "9876543210",
-      Class: "fa-regular fa-circle-dot text-success",
-      Status: "Active",
-      Image: Avatar_07,
-    },
-    {
-      id: 3,
-      Name: "Delta Infotech",
-      ClientId: "CLT-0002",
-      ContactPerson: "Tressa Wexler",
-      Email: "tressawexler@example.com",
-      Mobile: "9876543210",
-      Class: "fa-regular fa-circle-dot text-danger",
-      Status: "Inactive",
-      Image: Avatar_29,
-    },
-    {
-      id: 4,
-      Name: "Global Technologies",
-      ClientId: "CLT-0001",
-      ContactPerson: "Barry Cuda",
-      Email: "barrycuda@example.com",
-      Mobile: "9876543210",
-      Class: "fa-regular fa-circle-dot text-success",
-      Status: "Active",
-      Image: Avatar_19,
-    },
-    {
-      id: 5,
-      Name: "International Software Inc",
-      ClientId: "CLT-0006",
-      ContactPerson: "Walter Weaver",
-      Email: "walterweaver@example.com",
-      Mobile: "9876543210",
-      Class: "fa-regular fa-circle-dot text-success",
-      Status: "Active",
-      Image: Avatar_18,
-    },
-    {
-      id: 6,
-      Name: "Mercury Software Inc",
-      ClientId: "CLT-0007",
-      ContactPerson: "Amanda Warren",
-      Email: "amandawarren@example.com",
-      Mobile: "9876543210",
-      Class: "fa-regular fa-circle-dot text-success",
-      Status: "Active",
-      Image: Avatar_26,
-    },
-    {
-      id: 7,
-      Name: "Mustang Technologies",
-      ClientId: "CLT-0005",
-      ContactPerson: "Daniel Deacon",
-      Email: "danieldeacon@example.com",
-      Mobile: "9876543210",
-      Class: "fa-regular fa-circle-dot text-success",
-      Status: "Active",
-      Image: Avatar_14,
-    },
-    {
-      id: 8,
-      Name: "Wellware Company",
-      ClientId: "CLT-0004",
-      ContactPerson: "Misty Tison",
-      Email: "mistytison@example.com",
-      Mobile: "9876543210",
-      Class: "fa-regular fa-circle-dot text-success",
-      Status: "Active",
-      Image: Avatar_06,
-    },
-  ];
-
+  const [edit, setUs] = useState("");
+  const queryClient = useQueryClient();
+  //pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const { data: clientResponse, isLoading } = useGetAllClient(currentPage, pageSize);
+  const client = clientResponse?.data || [];
+  const paginationInfo = clientResponse?.pagination || {};
+  const handleTableChange = (page, newPageSize) => {
+    setCurrentPage(page);
+  };
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
+//delete
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const { mutateAsync } = useDeleteClient();
+  async function deleteEmployee() {
+    try {
+      const response = await mutateAsync(selectedId);
+      queryClient.invalidateQueries({ queryKey: [CLIENT_MUTATION_KEY] });
+      if (response?.success) {
+        successToast(response.message);
+        queryClient.invalidateQueries({ queryKey: [CLIENT_QUERY_KEY] })
+        setDeleteModal(false)
+      }
+    } catch (error) {
+      errorToast(error);
+    }
+  }
   const columns = [
     {
       title: "Name",
-      dataIndex: "Name",
-      render: (text, record) => (
-        <span className="table-avatar">
-          <Link to="/profile" className="avatar">
-            <img alt="" src={record.Image} />
-          </Link>
-          <Link to="/profile">{text}</Link>
-        </span>
-      ),
-      sorter: (a, b) => a.Name.length - b.Name.length,
+      dataIndex: "firstName",
+      // render: (text, record) => (
+      //   <span className="table-avatar">
+      //     <Link to="/profile" className="avatar">
+      //       <img alt="" src={record.Image} />
+      //     </Link>
+      //     <Link to="/profile">{text}</Link>
+      //   </span>
+      // ),
+      sorter: (a, b) => a.firstName.length - b.firstName.length,
     },
     {
-      title: "Client ID",
-      dataIndex: "ClientId",
-      sorter: (a, b) => a.ClientId.length - b.ClientId.length,
+      title: " ClientId ",
+      dataIndex: "clientId",
+      sorter: (a, b) => a.clientId.length - b.clientId.length,
     },
 
-    {
-      title: "Contact Person",
-      dataIndex: "ContactPerson",
-      sorter: (a, b) => a.ContactPerson.length - b.ContactPerson.length,
-    },
+    // {
+    //   title: "Contact Person",
+    //   dataIndex: "ContactPerson",
+    //   sorter: (a, b) => a.ContactPerson.length - b.ContactPerson.length,
+    // },
     {
       title: "Email",
-      dataIndex: "Email",
-      sorter: (a, b) => a.Email.length - b.Email.length,
+      dataIndex: "email",
+      sorter: (a, b) => a.email.length - b.email.length,
     },
 
     {
       title: "Mobile",
-      dataIndex: "Mobile",
-      sorter: (a, b) => a.Mobile.length - b.Mobile.length,
+      dataIndex: "phone",
+      sorter: (a, b) => a.phone.length - b.phone.length,
     },
-    {
-      title: "Status",
-      dataIndex: "Status",
-      render: (text) => (
-        <div className="dropdown">
-          <Link
-            to="#"
-            className="btn btn-white btn-sm btn-rounded dropdown-toggle"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i
-              className={
-                text === "Active"
-                  ? "far fa-dot-circle text-success"
-                  : "far fa-dot-circle text-danger"
-              }
-            />{" "}
-            {text}{" "}
-          </Link>
-          <div className="dropdown-menu">
-            <Link className="dropdown-item" to="#">
-              <i className="far fa-dot-circle text-success" /> Active
-            </Link>
-            <Link className="dropdown-item" to="#">
-              <i className="far fa-dot-circle text-danger" /> Inactive
-            </Link>
-          </div>
-        </div>
-      ),
-      sorter: (a, b) => a.Status.length - b.Status.length,
-    },
+    // {
+    //   title: "Status",
+    //   dataIndex: "Status",
+    //   render: (text) => (
+    //     <div className="dropdown">
+    //       <Link
+    //         to="#"
+    //         className="btn btn-white btn-sm btn-rounded dropdown-toggle"
+    //         data-bs-toggle="dropdown"
+    //         aria-expanded="false"
+    //       >
+    //         <i
+    //           className={
+    //             text === "Active"
+    //               ? "far fa-dot-circle text-success"
+    //               : "far fa-dot-circle text-danger"
+    //           }
+    //         />{" "}
+    //         {text}{" "}
+    //       </Link>
+    //       <div className="dropdown-menu">
+    //         <Link className="dropdown-item" to="#">
+    //           <i className="far fa-dot-circle text-success" /> Active
+    //         </Link>
+    //         <Link className="dropdown-item" to="#">
+    //           <i className="far fa-dot-circle text-danger" /> Inactive
+    //         </Link>
+    //       </div>
+    //     </div>
+    //   ),
+    //   sorter: (a, b) => a.Status.length - b.Status.length,
+    // },
     {
       title: "Action",
-      render: () => (
+      render: (record) => (
         <div className="dropdown dropdown-action text-end">
           <Link
             to="#"
@@ -194,15 +138,18 @@ const ClientList = () => {
               className="dropdown-item"
               to="#"
               data-bs-toggle="modal"
-              data-bs-target="#edit_client"
+              data-bs-target="#add_client"
+              onClick={() => setUs(record)}
             >
               <i className="fa fa-pencil m-r-5" /> Edit
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              data-bs-toggle="modal"
-              data-bs-target="#delete"
+              onClick={() => {
+                setSelectedId(record._id); 
+                setDeleteModal(true); 
+              }}
             >
               <i className="fa fa-trash m-r-5" /> Delete
             </Link>
@@ -227,25 +174,40 @@ const ClientList = () => {
             Linkname1="/clients-list"
           />
           {/* /Page Header */}
-          <ClientsFilter />
+          {/* <ClientsFilter /> */}
           <div className="row">
             <div className="col-md-12">
               <div className="table-responsive">
-                <SearchBox />
+                <SearchBox pageSize={pageSize} onPageSizeChange={handlePageSizeChange} />
                 <Table
                   className="table-striped"
                   style={{ overflowX: "auto" }}
                   columns={columns}
-                  dataSource={data}
+                  dataSource={client}
                   rowKey={(record) => record.id}
+                  locale={{ emptyText: 'No records found' }}
+                  pagination={{
+                    current: paginationInfo.currentPage || currentPage,
+                    pageSize: paginationInfo.itemsPerPage || pageSize,
+                    total: paginationInfo.totalItems || 0,
+                    showSizeChanger: false,
+                    showQuickJumper: true,
+                    onChange: handleTableChange,
+                  }}
                 />
               </div>
             </div>
           </div>
         </div>
       </div>
-      <ClientModelPopup />
-      <DeleteModal Name="Delete Client" />
+      <ClientModelPopup id={edit} setUs={setUs} />
+      <DeleteModal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        onDelete={deleteEmployee}
+        name="Delete Employee"
+        ID={selectedId}
+      />
     </>
   );
 };

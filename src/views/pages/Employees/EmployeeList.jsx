@@ -20,12 +20,24 @@ import { useQueryClient } from "@tanstack/react-query";
 import { errorToast, successToast } from "../../../utils/index.ts";
 
 const EmployeeList = () => {
-  const {data} = useGetAllEmployee();
+  // const {data} = useGetAllEmployee();
   const [edit, setUs] = useState("");
    const [deleteModal, setDeleteModal] = useState(false);
    const [selectedId, setSelectedId] = useState(null);
    const { mutateAsync } = useDeleteEmployee();
    const queryClient = useQueryClient();
+     const [currentPage, setCurrentPage] = useState(1);
+      const [pageSize, setPageSize] = useState(10);
+     const { data: employeeResponse, isLoading } = useGetAllEmployee(currentPage, pageSize);
+     const employee = employeeResponse?.data || [];
+     const paginationInfo = employeeResponse?.pagination || {};
+     const handleTableChange = (page, newPageSize) => {
+       setCurrentPage(page);
+     };
+     const handlePageSizeChange = (newSize) => {
+       setPageSize(newSize);
+       setCurrentPage(1);
+     };
    async function deleteEmployee() {
        try {
          const response = await mutateAsync(selectedId);
@@ -45,9 +57,9 @@ const EmployeeList = () => {
       dataIndex: "firstName",
       render: (text, record) => (
         <span className="table-avatar">
-          <Link to="/profile" className="avatar">
+          {/* <Link to="/profile" className="avatar">
             <img alt="" src={record.image} />
-          </Link>
+          </Link> */}
           <Link to="/profile">
             {text} <span>{record?.designationId?.designationName}</span>
           </Link>
@@ -80,36 +92,36 @@ const EmployeeList = () => {
       render: (date) => date.split("T")[0],
     },
     
-    {
-      title: "Role",
-      sorter: true,
-      render: () => (
-        <div className="dropdown">
-          <Link
-            to="#"
-            className="btn btn-white btn-sm btn-rounded dropdown-toggle"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Web Developer{" "}
-          </Link>
-          <div className="dropdown-menu">
-            <Link className="dropdown-item" to="#">
-              Software Engineer
-            </Link>
-            <Link className="dropdown-item" to="#">
-              Software Tester
-            </Link>
-            <Link className="dropdown-item" to="#">
-              Frontend Developer
-            </Link>
-            <Link className="dropdown-item" to="#">
-              UI/UX Developer
-            </Link>
-          </div>
-        </div>
-      ),
-    },
+    // {
+    //   title: "Role",
+    //   sorter: true,
+    //   render: () => (
+    //     <div className="dropdown">
+    //       <Link
+    //         to="#"
+    //         className="btn btn-white btn-sm btn-rounded dropdown-toggle"
+    //         data-bs-toggle="dropdown"
+    //         aria-expanded="false"
+    //       >
+    //         Web Developer{" "}
+    //       </Link>
+    //       <div className="dropdown-menu">
+    //         <Link className="dropdown-item" to="#">
+    //           Software Engineer
+    //         </Link>
+    //         <Link className="dropdown-item" to="#">
+    //           Software Tester
+    //         </Link>
+    //         <Link className="dropdown-item" to="#">
+    //           Frontend Developer
+    //         </Link>
+    //         <Link className="dropdown-item" to="#">
+    //           UI/UX Developer
+    //         </Link>
+    //       </div>
+    //     </div>
+    //   ),
+    // },
     {
       title: "Action",
       sorter: true,
@@ -164,17 +176,25 @@ const EmployeeList = () => {
             Linkname1="/employees-list"
           />
           {/* /Page Header */}
-          <EmployeeListFilter />
+          {/* <EmployeeListFilter /> */}
           <div className="row">
             <div className="col-md-12">
               <div className="table-responsive">
-                <SearchBox />
+                <SearchBox pageSize={pageSize} onPageSizeChange={handlePageSizeChange} />
                 <Table
                   className="table-striped"
                   columns={columns}
-                  dataSource={data}
+                  dataSource={employee}
                   rowKey={(record) => record.id}
                   locale={{ emptyText: 'No records found' }}
+                  pagination={{
+                    current: paginationInfo.currentPage || currentPage,
+                    pageSize: paginationInfo.itemsPerPage || pageSize,
+                    total: paginationInfo.totalItems || 0,
+                    showSizeChanger: false,
+                    showQuickJumper: true,
+                    onChange: handleTableChange,
+                  }}
                 />
               </div>
             </div>

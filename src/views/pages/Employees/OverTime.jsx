@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Avatar_02, Avatar_09 } from "../../../Routes/ImagePath";
-import { Table } from "antd";
+import { DatePicker, Table } from "antd";
 import Breadcrumbs from "../../../components/Breadcrumbs";
 import SearchBox from "../../../components/SearchBox";
 import AddOverTime from "../../../components/modelpopup/AddOverTime";
@@ -16,19 +16,21 @@ const OverTime = () => {
   const [selectedId, setSelectedId] = useState(null);
   const { mutateAsync } = useDeleteOvertime();
   const queryClient = useQueryClient();
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [showResults, setShowResults] = useState(false);
   async function deleteOverTime() {
-         try {
-           const response = await mutateAsync(selectedId);
-           queryClient.invalidateQueries({ queryKey: [OVERTIME_MUTATION_KEY] });
-           if (response?.success) {
-             successToast(response.message);
-             queryClient.invalidateQueries({ queryKey: [OVERTIME_QUERY_KEY] })
-             setDeleteModal(false)
-           }
-         } catch (error) {
-           errorToast(error);
-         }
-       }
+    try {
+      const response = await mutateAsync(selectedId);
+      queryClient.invalidateQueries({ queryKey: [OVERTIME_MUTATION_KEY] });
+      if (response?.success) {
+        successToast(response.message);
+        queryClient.invalidateQueries({ queryKey: [OVERTIME_QUERY_KEY] })
+        setDeleteModal(false)
+      }
+    } catch (error) {
+      errorToast(error);
+    }
+  }
   const statsData = [
     {
       title: "Overtime Employee",
@@ -178,6 +180,10 @@ const OverTime = () => {
       ),
     },
   ];
+  const handleSearch = () => {
+    // Trigger showing the header and results
+    setShowResults(true);
+  };
   return (
     <>
       <div className="page-wrapper">
@@ -192,17 +198,38 @@ const OverTime = () => {
           />
 
           {/* /Page Header */}
-          <div className="row">
-            {statsData.map((data, index) => (
-              <div className="col-md-6 col-sm-6 col-lg-6 col-xl-3" key={index}>
-                <div className="stats-info">
-                  <h6>{data.title}</h6>
-                  <h4>
-                    {data.value} <span>{data.month}</span>
-                  </h4>
+          <div style={{display:'flex',justifyContent:'end'}}>
+            <div style={{ marginBottom: '20px', display: 'flex' }}>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                className="form-control"
+                dateFormat="dd-MM-yyyy"
+                placeholderText="Select a date"
+              />
+              <button className="btn add-btn " type="submit" onClick={handleSearch}>Search</button>
+            </div>
+
+            {showResults && (
+              <div>
+                <h1>
+                  Results for{' '}
+                  {selectedDate ? selectedDate.toLocaleDateString() : 'No date selected'}
+                </h1>
+                <div className="row">
+                  {statsData && statsData.map((data, index) => (
+                    <div className="col-md-6 col-sm-6 col-lg-6 col-xl-3" key={index}>
+                      <div className="stats-info">
+                        <h6>{data.title}</h6>
+                        <h4>
+                          {data.value} <span>{data.month}</span>
+                        </h4>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
+            )}
           </div>
           {/* /Overtime Statistics */}
           <div className="row">
@@ -222,7 +249,7 @@ const OverTime = () => {
         </div>
         {/* /Page Content */}
       </div>
-      <AddOverTime id={edit} setUs={setUs}/>
+      <AddOverTime id={edit} setUs={setUs} />
       <DeleteModal
         isOpen={deleteModal}
         onClose={() => setDeleteModal(false)}

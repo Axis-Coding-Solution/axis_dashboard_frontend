@@ -2,10 +2,10 @@ import { DELETE_API, GET_API, POST_API, PUT_API } from "../../../utils/api_helpe
 import { apiErrorHandler } from "../helpers.ts";
 
 
-const url = "/employee"
+const url = "/client"
 
 const appendUrl = (segment: string) => `${url}/${segment}`;
-export const addEMPLOYEE = async (body: any) => {
+export const addClient = async (body: any) => {
     try {
         const res = await POST_API((url), body);
         return res.data
@@ -14,16 +14,16 @@ export const addEMPLOYEE = async (body: any) => {
     }
 }
 
-export const getAllEMPLOYEE = async (page=1 , limit=10) => {
+export const getAllClient = async (page=1 , limit=10) => {
     try {
-      const res = await GET_API(`/employee?page=${page}&limit=${limit}`);
+      const res = await GET_API(`/client?page=${page}&limit=${limit}`);
       return res?.data?.data;
     } catch (error: any) {
       return apiErrorHandler(error);
     }
   };
 
-  export const getByIdEMPLOYEE = async (id: string) => {
+  export const getByIdClient = async (id: string) => {
     try {
       const res = await GET_API(appendUrl(id));
       return res?.data?.data;
@@ -32,7 +32,7 @@ export const getAllEMPLOYEE = async (page=1 , limit=10) => {
     }
   };
 
-  export const delEMPLOYEE = async (id: string) => {
+  export const delClient = async (id: string) => {
     try {
       const res = await DELETE_API(appendUrl(id));
       return res?.data;
@@ -41,7 +41,7 @@ export const getAllEMPLOYEE = async (page=1 , limit=10) => {
     }
   };
 
-  export const editEMPLOYEE = async ({ id, data }: { id: string; data: any }) => {
+  export const editClient = async ({ id, data }: { id: string; data: any }) => {
     try {
       const res = await PUT_API(appendUrl(id), data);
       return res.data;

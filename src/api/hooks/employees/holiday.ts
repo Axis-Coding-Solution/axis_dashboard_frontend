@@ -6,7 +6,11 @@ export let HOLIDAY_QUERY_KEY = '/holiday';
 export const DEL_HOLIDAY_QUERY_KEY = '/holiday';
 export const EDIT_HOLIDAY_QUERY_KEY = '/editholiday';
 export const useAddHoliday = () => useMutation({ mutationFn: addHOLIDAY, mutationKey: [HOLIDAY_MUTATION_KEY]});
-export const useGetAllHoliday = () => useQuery({ queryFn: getAllHOLIDAY, queryKey: [HOLIDAY_QUERY_KEY], });
+export const useGetAllHoliday = (page = 1, limit = 25) =>
+    useQuery({
+      queryKey: [HOLIDAY_QUERY_KEY, page, limit],
+      queryFn: () => getAllHOLIDAY(page, limit),
+    })
 export const useGetByIdHoliday = (id) => useQuery({ queryFn: ()=> getByIdHOLIDAY(id), queryKey: [DEL_HOLIDAY_QUERY_KEY, id], });
 export const useDeleteHoliday = () => useMutation({ mutationFn: delHOLIDAY, mutationKey: [HOLIDAY_MUTATION_KEY], });
 export const useEditHoliday = () => useMutation({ mutationFn: editHOLIDAY, mutationKey: [EDIT_HOLIDAY_QUERY_KEY], });

@@ -14,10 +14,10 @@ export const addDepartment = async (body: any) => {
     }
 }
 
-export const getAllDepartment = async () => {
+export const getAllDepartment = async (page=1 , limit=10) => {
     try {
-      const res = await GET_API(url);
-      return res?.data?.data?.data;
+      const res = await GET_API(`/department?page=${page}&limit=${limit}`);
+      return res?.data?.data;
     } catch (error: any) {
       return apiErrorHandler(error);
     }

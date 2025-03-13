@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import { useGetAllEmployee } from "../../api/hooks/employees/allEmployee.ts";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { overtimeInitialValue } from "../../utils/constants/overTime.ts";
 import { employeeSchema } from "../../utils/validation-schemas/allEmployee.ts";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -18,76 +18,70 @@ const AddOverTime = ({ id, setUs }) => {
     handleSubmit,
     reset,
     setValue,
+    control,
     watch,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting, isValid }
   } = useForm({
+    mode: "onChange", // validate on each change
     defaultValues: overtimeInitialValue,
     resolver: yupResolver(overTimeSchema)
   });
+
   const [selectedDate1, setSelectedDate1] = useState(null);
-  
+
   const { data: employeeData } = useGetAllEmployee();
   const { mutateAsync: addOverTime } = useAddOvertime();
   const { mutateAsync: editOverTime } = useEditOvertime();
   const { data: overTimeData } = useGetByIdOvertime(id?._id, {
     enabled: !!id?._id,
   });
-  
-  const handleDateChange1 = (date) => {
-    setSelectedDate1(date);
-  };
-  
+
   const queryClient = useQueryClient();
-  
-  useEffect(() => {
-    setValue("overtimeDate", selectedDate1);
-  }, [selectedDate1, setValue]);
-  const employee = employeeData || [];
-  const EmployeeOptions = employee.map((data) => ({
-    value: data._id,
-    label: data.firstName,
-  })) || [];
+
+  // Reset or populate form based on edit mode
   useEffect(() => {
     if (id && id._id && overTimeData) {
       reset({
         ...overTimeData,
         employeeId: overTimeData.employeeId._id,
+        overtimeDate: overTimeData.overtimeDate ? new Date(overTimeData.overtimeDate) : null
       });
-      if (overTimeData.overtimeDate) {
-        setSelectedDate1(new Date(overTimeData.overtimeDate));
-      }
+      setSelectedDate1(overTimeData.overtimeDate ? new Date(overTimeData.overtimeDate) : null);
     } else {
       reset(overtimeInitialValue);
       setSelectedDate1(null);
     }
   }, [id, overTimeData, reset]);
-  const employeeIdValue = watch("employeeId");
-  const selectedEmployeeOption =
-    EmployeeOptions.find((option) => option.value === employeeIdValue) || null;
-  
-    const onSubmitHandler = async (data) => {
-      let response;
-      try {
-        data.overtimeDate = selectedDate1 ? selectedDate1.toISOString() : null;
-    
-        if (id && id._id) {
-          response = await editOverTime({ id: id._id, data });
-        } else {
-          response = await addOverTime(data);
-        }
-        if (response?.success) {
-          successToast(response.message);
-          queryClient.invalidateQueries(["OVERTIME_QUERY_KEY"]);
-          reset();
-        } else {
-          errorToast(response?.message || "An unexpected error occurred.");
-        }
-      } catch (error) {
-        errorToast("User is not eligible to access this resource");
+  const employees = employeeData?.data || [];
+  const EmployeeOptions = employees.map((data) => ({
+    value: data._id,
+    label: data.firstName,
+  }));
+
+
+  const onSubmitHandler = async (data) => {
+    let response;
+    try {
+      // Ensure overtimeDate is in the proper format
+      data.overtimeDate = data.overtimeDate ? data.overtimeDate.toISOString() : null;
+
+      if (id && id._id) {
+        response = await editOverTime({ id: id._id, data });
+      } else {
+        response = await addOverTime(data);
       }
-    };
-    
-  
+      if (response?.success) {
+        successToast(response.message);
+        queryClient.invalidateQueries(["OVERTIME_QUERY_KEY"]);
+        reset();
+      } else {
+        errorToast(response?.message || "An unexpected error occurred.");
+      }
+    } catch (error) {
+      errorToast("User is not eligible to access this resource");
+    }
+  };
+
   const customStyles = {
     option: (provided, state) => ({
       ...provided,
@@ -98,11 +92,11 @@ const AddOverTime = ({ id, setUs }) => {
       },
     }),
   };
-  
+
   const onError = (errors) => {
     console.log("Validation Errors:", errors);
   };
-  
+
   return (
     <div>
       <div id="add_overtime" className="modal custom-modal fade" role="dialog">
@@ -124,36 +118,66 @@ const AddOverTime = ({ id, setUs }) => {
             </div>
             <div className="modal-body">
               <form onSubmit={handleSubmit(onSubmitHandler, onError)}>
+                {/* Employee Select Field */}
                 <div className="input-block mb-3">
                   <label className="col-form-label">
                     Select Employee <span className="text-danger">*</span>
                   </label>
-                  <Select
-                    options={EmployeeOptions}
-                    value={selectedEmployeeOption}
-                    placeholder="Select"
-                    onChange={(option) =>
-                      setValue("employeeId", option.value)
-                    }
-                    styles={customStyles}
+                  <Controller
+                    name="employeeId"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <Select
+                          {...field}
+                          options={EmployeeOptions}
+                          value={
+                            EmployeeOptions.find(option => option.value === field.value) ||
+                            null
+                          }
+                          onChange={(option) => field.onChange(option.value)}
+                          placeholder="Select"
+                          styles={customStyles}
+                        />
+                        {errors.employeeId && (
+                          <small className="text-danger">
+                            {errors.employeeId.message || "Please select an employee"}
+                          </small>
+                        )}
+                      </>
+                    )}
                   />
                 </div>
+
+                {/* Overtime Date Field */}
                 <div className="input-block mb-3">
                   <label className="col-form-label">
                     Overtime Date <span className="text-danger">*</span>
                   </label>
                   <div className="cal-icon">
-                    <DatePicker
-                      selected={selectedDate1}
-                      onChange={(date) => {
-                        setSelectedDate1(date);
-                        setValue("overtimeDate", date);
-                      }}
-                      className="form-control"
-                      dateFormat="dd-MM-yyyy"
+                    <Controller
+                      name="overtimeDate"
+                      control={control}
+                      render={({ field }) => (
+                        <>
+                          <DatePicker
+                            selected={field.value}
+                            onChange={(date) => field.onChange(date)}
+                            className="form-control"
+                            dateFormat="dd-MM-yyyy"
+                          />
+                          {errors.overtimeDate && (
+                            <small className="text-danger">
+                              {errors.overtimeDate.message || "Please select an overtime date"}
+                            </small>
+                          )}
+                        </>
+                      )}
                     />
                   </div>
                 </div>
+
+                {/* Overtime Hours Field */}
                 <div className="input-block mb-3">
                   <label className="col-form-label">
                     Overtime Hours <span className="text-danger">*</span>
@@ -163,7 +187,14 @@ const AddOverTime = ({ id, setUs }) => {
                     type="text"
                     {...register("overtimeHours")}
                   />
+                  {errors.overtimeHours && (
+                    <small className="text-danger">
+                      {errors.overtimeHours.message || "Please enter overtime hours"}
+                    </small>
+                  )}
                 </div>
+
+                {/* Description Field */}
                 <div className="input-block mb-3">
                   <label className="col-form-label">
                     Description <span className="text-danger">*</span>
@@ -171,16 +202,23 @@ const AddOverTime = ({ id, setUs }) => {
                   <textarea
                     rows={4}
                     className="form-control"
-                    defaultValue={""}
                     {...register("description")}
                   />
+                  {errors.description && (
+                    <small className="text-danger">
+                      {errors.description.message || "Please enter a description"}
+                    </small>
+                  )}
                 </div>
+
+                {/* Submit Button */}
                 <div className="submit-section">
                   <button
                     className="btn btn-primary submit-btn"
                     data-bs-dismiss="modal"
                     aria-label="Close"
                     type="submit"
+                    disabled={!isValid || isSubmitting}
                   >
                     {id && id._id ? `Update` : `Submit`}
                   </button>

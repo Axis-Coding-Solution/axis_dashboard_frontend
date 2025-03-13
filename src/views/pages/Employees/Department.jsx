@@ -16,6 +16,19 @@ const Department = () => {
   const queryClient = useQueryClient();
   const { data } = useGetAllDepartment();
   const { mutateAsync } = useDeleteDepartment();
+  //for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const { data: departmentResponse, isLoading } = useGetAllDepartment(currentPage, pageSize);
+  const department = departmentResponse?.data || [];
+  const paginationInfo = departmentResponse?.pagination || {};
+  const handleTableChange = (page, newPageSize) => {
+    setCurrentPage(page);
+  };
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
   async function deleteDepartment() {
     try {
       const response = await mutateAsync(selectedId);
@@ -73,8 +86,8 @@ const Department = () => {
                 className="dropdown-item"
                 to="#"
                 onClick={() => {
-                  setSelectedId(record._id); 
-                  setDeleteModal(true); 
+                  setSelectedId(record._id);
+                  setDeleteModal(true);
                 }}
               >
                 <i className="fa fa-trash m-r-5" /> Delete
@@ -102,13 +115,22 @@ const Department = () => {
           <div className="row">
             <div className="col-md-12">
               <div className="table-responsive">
-                <SearchBox />
+                <SearchBox pageSize={pageSize} onPageSizeChange={handlePageSizeChange} />
                 <Table
-                  columns={columns}
-                  dataSource={data?.length > 0 ? data : []}
-                  className="table-striped"
-                  rowKey={(record) => record._id}
-                  locale={{ emptyText: 'No records found' }}
+                columns={columns}
+                dataSource={department}
+                className="table-striped"
+                rowKey={(record) => record._id}
+                loading={isLoading}
+                locale={{ emptyText: "No records found" }}
+                pagination={{
+                  current: paginationInfo.currentPage || currentPage,
+                  pageSize: paginationInfo.itemsPerPage || pageSize,
+                  total: paginationInfo.totalItems || 0,
+                  showSizeChanger: false,
+                  showQuickJumper: true,
+                  onChange: handleTableChange,
+                }}
                 />
               </div>
             </div>

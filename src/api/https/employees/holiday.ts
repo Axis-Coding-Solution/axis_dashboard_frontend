@@ -8,20 +8,16 @@ const appendUrl = (segment: string) => `${url}/${segment}`;
 export const addHOLIDAY = async (body: any) => {
     try {
         const res = await POST_API((url), body);
-        console.log(res,'7777777777777777777777777');
-        
         return res.data
     } catch (error: any) {
         return apiErrorHandler(error)
     }
 }
 
-export const getAllHOLIDAY = async () => {
+export const getAllHOLIDAY = async (page=1 , limit=10) => {
     try {
-      const res = await GET_API(url);
-      console.log(res,'66666666666');
-      
-      return res?.data?.data?.data;
+      const res = await GET_API(`/holiday?page=${page}&limit=${limit}`);
+      return res?.data?.data;
     } catch (error: any) {
       return apiErrorHandler(error);
     }
@@ -48,6 +44,7 @@ export const getAllHOLIDAY = async () => {
   export const editHOLIDAY = async ({ id, data }: { id: string; data: any }) => {
     try {
       const res = await PUT_API(appendUrl(id),data);
+      
       return res?.data;
     } catch (error: any) {
       return Promise.reject(apiErrorHandler(error));

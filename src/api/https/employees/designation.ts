@@ -2,7 +2,7 @@
   import { apiErrorHandler } from "../helpers.ts";
   
   
-  const url = "/designation"
+  const url = `/designation`
   
   const appendUrl = (segment: string) => `${url}/${segment}`;
   export const addDesignation = async (body: any) => {
@@ -16,10 +16,10 @@
       }
   }
   
-  export const getAllDesignation = async () => {
+  export const getAllDesignation = async (page=1 , limit=10) => {
       try {
-        const res = await GET_API(url);
-        return res?.data?.data?.data;
+        const res = await GET_API(`/designation?page=${page}&limit=${limit}`);
+        return res?.data?.data;
       } catch (error: any) {
         return apiErrorHandler(error);
       }

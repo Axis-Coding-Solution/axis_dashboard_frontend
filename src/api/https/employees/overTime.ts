@@ -8,8 +8,6 @@ const appendUrl = (segment: string) => `${url}/${segment}`;
 export const addOVERTIME = async (body: any) => {
     try {
         const res = await POST_API((url), body);
-        console.log(res,'7777777777777777777777777');
-        
         return res.data
     } catch (error: any) {
         return apiErrorHandler(error)
@@ -19,8 +17,6 @@ export const addOVERTIME = async (body: any) => {
 export const getAllOVERTIME = async () => {
     try {
       const res = await GET_API(url);
-      console.log(res,'66666666666');
-      
       return res?.data?.data?.data;
     } catch (error: any) {
       return apiErrorHandler(error);

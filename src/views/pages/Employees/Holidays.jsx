@@ -11,14 +11,26 @@ import { base_url } from "../../../base_urls";
 import { HOLIDAY_MUTATION_KEY, HOLIDAY_QUERY_KEY, useDeleteHoliday, useGetAllHoliday } from "../../../api/hooks/employees/holiday.ts";
 import { errorToast, successToast } from "../../../utils/index.ts";
 import { useQueryClient } from "@tanstack/react-query";
+import SearchBox from "../../../components/SearchBox.jsx";
 
 const Holidays = () => {
-  const { data } = useGetAllHoliday();
   const [edit, setUs] = useState("");
   const [deleteModal, setDeleteModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const queryClient = useQueryClient();
   const { mutateAsync } = useDeleteHoliday();
+  const [currentPage, setCurrentPage] = useState(1);
+   const [pageSize, setPageSize] = useState(10);
+  const { data: holidayResponse, isLoading } = useGetAllHoliday(currentPage, pageSize);
+  const holiday = holidayResponse?.data || [];
+  const paginationInfo = holidayResponse?.pagination || {};
+  const handleTableChange = (page, newPageSize) => {
+    setCurrentPage(page);
+  };
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
   async function deleteEmployee() {
     try {
       const response = await mutateAsync(selectedId);
@@ -110,17 +122,25 @@ const Holidays = () => {
             modal="#add_holiday"
             name="Add Holiday"
           />
-
+          <SearchBox pageSize={pageSize} onPageSizeChange={handlePageSizeChange} />
           {/* /Page Header */}
           <div className="row">
             <div className="col-md-12">
               <div className="table-responsive">
                 <Table
                   columns={columns}
-                  dataSource={data?.length > 0 ? data : []}
+                  dataSource={holiday}
                   className="table-striped"
                   rowKey={(record) => record.id}
                   locale={{ emptyText: 'No records found' }}
+                  pagination={{
+                    current: paginationInfo.currentPage || currentPage,
+                    pageSize: paginationInfo.itemsPerPage || pageSize,
+                    total: paginationInfo.totalItems || 0,
+                    showSizeChanger: false,
+                    showQuickJumper: true,
+                    onChange: handleTableChange,
+                  }}
                 />
               </div>
             </div>
@@ -128,7 +148,7 @@ const Holidays = () => {
         </div>
         {/* /Page Content */}
       </div>
-      <AddHoliday id={edit} setUs={setUs}/>
+      <AddHoliday id={edit} setUs={setUs} />
       <DeleteModal
         isOpen={deleteModal}
         onClose={() => setDeleteModal(false)}
