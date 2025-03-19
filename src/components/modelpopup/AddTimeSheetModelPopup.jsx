@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useGetAllProject } from "../../api/hooks/project/project.ts";
 
 export const AddTimeSheetModelPopup = () => {
-  const project = [
-    { value: 1, label: "Office Management" },
-    { value: 2, label: "Project Management" },
-    { value: 3, label: "Video Calling App" },
-    { value: 4, label: "Hospital Administration" },
-  ];
+  const { data: project } = useGetAllProject();
+  const projectOptions = project?.data?.map((proj) => ({
+    label: proj.projectName,
+    value: proj._id
+  })) || [];
+
   const [selectedDate1, setSelectedDate1] = useState(null);
 
   const handleDateChange1 = (date) => {
@@ -52,7 +53,7 @@ export const AddTimeSheetModelPopup = () => {
                       Project <span className="text-danger">*</span>
                     </label>
                     <Select
-                      options={project}
+                      options={projectOptions}
                       placeholder="Office Management"
                       style={customStyles}
                     />

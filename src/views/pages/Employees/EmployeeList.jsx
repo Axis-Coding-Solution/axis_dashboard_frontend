@@ -22,35 +22,35 @@ import { errorToast, successToast } from "../../../utils/index.ts";
 const EmployeeList = () => {
   // const {data} = useGetAllEmployee();
   const [edit, setUs] = useState("");
-   const [deleteModal, setDeleteModal] = useState(false);
-   const [selectedId, setSelectedId] = useState(null);
-   const { mutateAsync } = useDeleteEmployee();
-   const queryClient = useQueryClient();
-     const [currentPage, setCurrentPage] = useState(1);
-      const [pageSize, setPageSize] = useState(10);
-     const { data: employeeResponse, isLoading } = useGetAllEmployee(currentPage, pageSize);
-     const employee = employeeResponse?.data || [];
-     const paginationInfo = employeeResponse?.pagination || {};
-     const handleTableChange = (page, newPageSize) => {
-       setCurrentPage(page);
-     };
-     const handlePageSizeChange = (newSize) => {
-       setPageSize(newSize);
-       setCurrentPage(1);
-     };
-   async function deleteEmployee() {
-       try {
-         const response = await mutateAsync(selectedId);
-         queryClient.invalidateQueries({ queryKey: [EMPLOYEE_MUTATION_KEY] });
-         if (response?.success) {
-           successToast(response.message);
-           queryClient.invalidateQueries({ queryKey: [EMPLOYEE_QUERY_KEY] })
-           setDeleteModal(false)
-         }
-       } catch (error) {
-         errorToast(error);
-       }
-     }
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const { mutateAsync } = useDeleteEmployee();
+  const queryClient = useQueryClient();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const { data: employeeResponse, isLoading } = useGetAllEmployee(currentPage, pageSize);
+  const employee = employeeResponse?.data || [];
+  const paginationInfo = employeeResponse?.pagination || {};
+  const handleTableChange = (page, newPageSize) => {
+    setCurrentPage(page);
+  };
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
+  async function deleteEmployee() {
+    try {
+      const response = await mutateAsync(selectedId);
+      queryClient.invalidateQueries({ queryKey: [EMPLOYEE_MUTATION_KEY] });
+      if (response?.success) {
+        successToast(response.message);
+        queryClient.invalidateQueries({ queryKey: [EMPLOYEE_QUERY_KEY] })
+        setDeleteModal(false)
+      }
+    } catch (error) {
+      errorToast(error);
+    }
+  }
   const columns = [
     {
       title: "Name",
@@ -66,7 +66,7 @@ const EmployeeList = () => {
         </span>
       ),
       sorter: (a, b) => a.name.length - b.name.length,
-    },    
+    },
     {
       title: "Employee ID",
       dataIndex: "employeeId",
@@ -91,7 +91,7 @@ const EmployeeList = () => {
       sorter: (a, b) => new Date(a.joiningDate) - new Date(b.joiningDate),
       render: (date) => date.split("T")[0],
     },
-    
+
     // {
     //   title: "Role",
     //   sorter: true,
@@ -149,8 +149,8 @@ const EmployeeList = () => {
               className="dropdown-item"
               to="#"
               onClick={() => {
-                setSelectedId(record._id); 
-                setDeleteModal(true); 
+                setSelectedId(record._id);
+                setDeleteModal(true);
               }}
             >
               <i className="fa fa-trash m-r-5" /> Delete
@@ -201,14 +201,14 @@ const EmployeeList = () => {
           </div>
         </div>
         {/* /Page Content */}
-        <AllEmployeeAddPopup id={edit} setUs={setUs}/>
+        <AllEmployeeAddPopup id={edit} setUs={setUs} />
         <DeleteModal
-        isOpen={deleteModal}
-        onClose={() => setDeleteModal(false)}
-        onDelete={deleteEmployee}
-        name="Delete Employee"
-        ID={selectedId}
-      />
+          isOpen={deleteModal}
+          onClose={() => setDeleteModal(false)}
+          onDelete={deleteEmployee}
+          name="Delete Employee"
+          ID={selectedId}
+        />
       </div>
     </div>
   );

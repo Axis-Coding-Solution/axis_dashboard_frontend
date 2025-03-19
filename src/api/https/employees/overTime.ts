@@ -1,7 +1,5 @@
 import { DELETE_API, GET_API, POST_API, PUT_API } from "../../../utils/api_helper.ts";
 import { apiErrorHandler } from "../helpers.ts";
-
-
 const url = "/overtime"
 
 const appendUrl = (segment: string) => `${url}/${segment}`;
@@ -31,7 +29,16 @@ export const getAllOVERTIME = async () => {
       return apiErrorHandler(error);
     }
   };
-
+  export const getByDataOVERTIME = async (date) => {
+    try {
+      console.log(date,'1111111111111111');
+      const url = `/overtime?date=${date}`; 
+      const res = await GET_API(url);
+      return res?.data?.data;
+    } catch (error) {
+      return apiErrorHandler(error);
+    }
+  };
   export const delOVERTIME = async (id: string) => {
     try {
       const res = await DELETE_API(appendUrl(id));

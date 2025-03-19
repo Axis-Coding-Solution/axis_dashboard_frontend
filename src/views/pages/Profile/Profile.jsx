@@ -1,11 +1,21 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
-import React from "react";
+import React, { useEffect } from "react";
 import { Avatar_02, Avatar_16 } from "../../../Routes/ImagePath";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import ProfileTab from "./ProfileTab";
 import Breadcrumbs from "../../../components/Breadcrumbs";
+import { useGetAllEmployee } from "../../../api/hooks/employees/allEmployee.ts";
 
 const Profile = () => {
+  const { id } = useParams();
+
+  useEffect(() => {
+    console.log("Received employee ID in profile page:", id);
+    // You can now fetch employee data using that ID
+  }, [id]);
+  const {data} = useGetAllEmployee();
+  console.log(data,'1111111111111111');
+  
   const userData = {
     id: 1,
     name: "John Doe",
@@ -100,7 +110,7 @@ const Profile = () => {
                               <div className="title">Gender:</div>
                               <div className="text">{userData.gender}</div>
                             </li>
-                            <li>
+                            {/* <li>
                               <div className="title">Reports to:</div>
                               <div className="text">
                                 <div className="avatar-box">
@@ -112,7 +122,7 @@ const Profile = () => {
                                   {userData.supervisor.name}
                                 </Link>
                               </div>
-                            </li>
+                            </li> */}
                           </ul>
                         </div>
                       </div>

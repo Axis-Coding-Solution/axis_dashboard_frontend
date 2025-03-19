@@ -13,15 +13,14 @@ export const addProject = async (body: any) => {
         return apiErrorHandler(error)
     }
 }
-
-export const getAllProject = async () => {
-    try {
-      const res = await GET_API(url);
-      return res?.data?.data;
-    } catch (error: any) {
-      return apiErrorHandler(error);
-    }
-  };
+export const getAllProject = async (page=1 , limit=10) => {
+  try {
+    const res = await GET_API(`/project?page=${page}&limit=${limit}`);
+    return res?.data?.data;
+  } catch (error: any) {
+    return apiErrorHandler(error);
+  }
+};
 
   export const getByIdProject = async (id: string) => {
     try {
@@ -41,11 +40,9 @@ export const getAllProject = async () => {
     }
   };
 
-  export const editProject = async ({ id, projectName }: { id: string; projectName: any }) => {
+  export const editProject = async ({ id, data }: { id: string; data: any }) => {
     try {
-      console.log(id,'0000000000000',projectName);
-      
-      const res = await PUT_API(appendUrl(id), {projectName});
+      const res = await PUT_API(appendUrl(id), data);
       return res.data;
     } catch (error: any) {
       return Promise.reject(apiErrorHandler(error));
