@@ -1,11 +1,9 @@
 import { DELETE_API, GET_API, POST_API, PUT_API } from "../../../utils/api_helper.ts";
 import { apiErrorHandler } from "../helpers.ts";
-
-
-const url = "/project"
+const url = "/timesheet"
 
 const appendUrl = (segment: string) => `${url}/${segment}`;
-export const addProject = async (body: any) => {
+export const addTIMESHEET = async (body: any) => {
     try {
         const res = await POST_API((url), body);
         return res.data
@@ -13,16 +11,17 @@ export const addProject = async (body: any) => {
         return apiErrorHandler(error)
     }
 }
-export const getAllProject = async (page=1 , limit=10) => {
+
+export const getAllTIMESHEET = async (page=1 , limit=10) => {
   try {
-    const res = await GET_API(`/project?page=${page}&limit=${limit}`);
+    const res = await GET_API(`/timesheet?page=${page}&limit=${limit}`);
     return res?.data?.data;
   } catch (error: any) {
     return apiErrorHandler(error);
   }
 };
 
-  export const getByIdProject = async (id: string) => {
+  export const getByIdTIMESHEET = async (id: string) => {
     try {
       const res = await GET_API(appendUrl(id));
       return res?.data?.data;
@@ -30,7 +29,17 @@ export const getAllProject = async (page=1 , limit=10) => {
       return apiErrorHandler(error);
     }
   };
-  export const delProject = async (id: string) => {
+  export const getByDataTIMESHEET = async (date) => {
+    try {
+      console.log(date,'1111111111111111');
+      const url = `/timesheet?date=${date}`; 
+      const res = await GET_API(url);
+      return res?.data?.data;
+    } catch (error) {
+      return apiErrorHandler(error);
+    }
+  };
+  export const delTIMESHEET = async (id: string) => {
     try {
       const res = await DELETE_API(appendUrl(id));
       return res?.data;
@@ -39,20 +48,11 @@ export const getAllProject = async (page=1 , limit=10) => {
     }
   };
 
-  export const editProject = async ({ id, data }: { id: string; data: any }) => {
+  export const editTIMESHEET = async ({ id, data }: { id: string; data: any }) => {
     try {
       const res = await PUT_API(appendUrl(id), data);
-      return res.data;
+      return res?.data;
     } catch (error: any) {
       return Promise.reject(apiErrorHandler(error));
-    }
-  };
-
-  export const getProjectByRole = async () => {
-    try {
-      const res = await GET_API(`${url}/role`);
-      return res?.data?.data;
-    } catch (error: any) {
-      return apiErrorHandler(error);
     }
   };

@@ -62,10 +62,12 @@ const ScrollToTop = () => {
 };
 
 const AppRouter = () => {
-  useEffect(() => {
-    localStorage.setItem("email", "admin@gmail.com");
-    localStorage.setItem("password", "123456");
-  }, []);
+  // useEffect(() => {
+  //   localStorage.setItem("email", "admin@gmail.com");
+  //   localStorage.setItem("password", "123456");
+  // }, []);
+  
+
   return (
     <div>
       <Provider store={store}>

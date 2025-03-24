@@ -31,24 +31,33 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await mutateAsync(data)
+      const response = await mutateAsync(data);
       const { token, findUser } = response.data;
-      console.log(response.data);
-      
-      auth?.handleLogin({ token, findUser });
-      localStorage.setItem('token', token)
+  
+      console.log(response.data, '111111111111111111');
+  
+      auth?.handleLogin({ token, user: findUser });
+      localStorage.setItem('token', token);
+      localStorage.setItem("credencial", JSON.stringify({ token, email: findUser?.email }));
+  
       successToast(response.message);
-      navigate('/admin-dashboard');
+  
+      if (findUser?.role === 'admin') {
+        navigate('/admin-dashboard');
+      } else {
+        navigate('/employee-dashboard');
+      }
     } catch (error) {
-
-        errorToast('Wrong Email or Password.');
+      errorToast('Wrong Email or Password.');
     }
-  }
+  };
+  
+  
 
-  useEffect(() => {
-    setValue("email", localStorage.getItem("email"));
-    setValue("password", localStorage.getItem("password"));
-  }, []);
+  // useEffect(() => {
+  //   setValue("email", localStorage.getItem("email"));
+  //   setValue("password", localStorage.getItem("password"));
+  // }, []);
 
   const [eye, seteye] = useState(true);
 
@@ -61,14 +70,14 @@ const Login = () => {
       <div className="account-page">
         <div className="main-wrapper">
           <div className="account-content">
-            <Link to="/job-list" className="btn btn-primary apply-btn">
+            {/* <Link to="/job-list" className="btn btn-primary apply-btn">
               Apply Job
-            </Link>
+            </Link> */}
             <div className="container">
               {/* Account Logo */}
               <div className="account-logo">
                 <Link to="/admin-dashboard">
-                  <img src={Applogo} alt="Dreamguy's Technologies" />
+                  <img src={Applogo} alt="Dreamguy's Technologies" /> 
                 </Link>
               </div>
               {/* /Account Logo */}
@@ -89,7 +98,7 @@ const Login = () => {
                               className={`form-control ${errors?.email ? "error-input" : ""
                                 }`}
                               type="text"
-                              defaultValue={localStorage.getItem("email")}
+                              // defaultValue={localStorage.getItem("email")}
                               onChange={onChange}
                               value={value}
                               autoComplete="true"
@@ -153,12 +162,12 @@ const Login = () => {
                         </button>
                       </div>
                     </form>
-                    <div className="account-footer">  
+                    {/* <div className="account-footer">  
                       <p>
                         Don't have an account yet?{" "}
                         <Link to="/register">Register</Link>
                       </p>
-                    </div>
+                    </div> */}
                   </div>
                   {/* /Account Form */}
                 </div>

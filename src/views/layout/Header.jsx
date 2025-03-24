@@ -69,12 +69,19 @@ const Header = (props) => {
   };
 
   const location = useLocation();
+  console.log(location,'location----------');
+  
   let pathname = location.pathname;
+  console.log(pathname,'pathname----------');
   // const { value } = useSelector((state) => state.user);
+  console.log( localStorage.getItem,'111 localStorage.getItem');
+  
   const Credencial = localStorage.getItem("credencial");
   const Value = JSON.parse(Credencial);
   const UserName = Value?.email?.split("@")[0];
   const ProfileName = UserName?.charAt(0).toUpperCase() + UserName?.slice(1);
+console.log(Credencial,'Credencial----------');
+console.log(Value,'Value----------------');
 
   const { t, i18n } = useTranslation();
 

@@ -1,167 +1,81 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Table } from "antd";
-import {
-  Avatar_01,
-  Avatar_02,
-  Avatar_03,
-  Avatar_04,
-  Avatar_05,
-  Avatar_06,
-  Avatar_07,
-  Avatar_08,
-  Avatar_09,
-  Avatar_10,
-} from "../../../Routes/ImagePath";
 import Breadcrumbs from "../../../components/Breadcrumbs";
 import SearchBox from "../../../components/SearchBox";
 import DeleteModal from "../../../components/modelpopup/DeleteModal";
 import { AddTimeSheetModelPopup } from "../../../components/modelpopup/AddTimeSheetModelPopup";
+import { TIMESHEET_MUTATION_KEY, TIMESHEET_QUERY_KEY, useDeleteTimeSheet, useGetAllTimeSheet } from "../../../api/hooks/employees/timeSheet.ts";
+import { errorToast, successToast } from "../../../utils/index.ts";
+import { useQueryClient } from "@tanstack/react-query";
 
 const TimeSheet = () => {
-  const timesheet = [
-    {
-      id: 1,
-      img: Avatar_01,
-      name: "John Doe",
-      role: "Web Designer",
-      date: "1 Jan 2023",
-      projects: "Video Calling App",
-      assignedhours: "20",
-      hours: "12",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-      id: 2,
-      img: Avatar_02,
-      name: "Richard Miles",
-      role: "Android Developer",
-      date: "1 Jan 2023",
-      projects: "Project Management",
-      assignedhours: "10",
-      hours: "12",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-      id: 3,
-      img: Avatar_03,
-      name: "Jeffery Lalor ",
-      role: "Team Leader",
-      date: "1 Jan 2023",
-      projects: "Ware house developement",
-      assignedhours: "10",
-      hours: "12",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-      id: 4,
-      img: Avatar_04,
-      name: "Jeffrey Warden",
-      role: "Web Developer ",
-      date: "1 Jan 2023",
-      projects: "Project Management",
-      assignedhours: "10",
-      hours: "12",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-      id: 5,
-      img: Avatar_05,
-      name: "John Doe",
-      role: "Web Designer",
-      date: "1 Jan 2023",
-      projects: "Office Management",
-      assignedhours: "10",
-      hours: "12",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-      id: 6,
-      img: Avatar_06,
-      name: "John Smith ",
-      role: "Android Developer",
-      date: "1 Jan 2023",
-      projects: "Video Calling App",
-      assignedhours: "10",
-      hours: "12",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-      id: 7,
-      img: Avatar_07,
-      name: " Lesley Grauer",
-      role: "Team Leader",
-      date: "1 Jan 2023",
-      projects: "Hospital Administration",
-      assignedhours: "10",
-      hours: "12",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-      id: 8,
-      img: Avatar_08,
-      name: " Loren Gatlin ",
-      role: "Android Developer",
-      date: "1 Jan 2023",
-      projects: "Office Management",
-      assignedhours: "10",
-      hours: "12",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-      id: 9,
-      img: Avatar_09,
-      name: " Mike Litorus",
-      role: "Android DeveloperIOS Developer",
-      date: "1 Jan 2023",
-      projects: "Hospital Administration",
-      assignedhours: "10",
-      hours: "12",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-      id: 10,
-      img: Avatar_10,
-      name: "Richard Miles",
-      role: "Web Developer",
-      date: "1 Jan 2023",
-      projects: "Project Management",
-      assignedhours: "10",
-      hours: "12",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-  ];
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const { data: timeSheetData, isLoading } = useGetAllTimeSheet(currentPage, pageSize);
+  const timeSheet = timeSheetData?.data || [];
+  const paginationInfo = timeSheetData?.pagination || {};
+  const handleTableChange = (page, newPageSize) => {
+    setCurrentPage(page);
+  };
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
+  const [edit, setUs] = useState("");
+ const [selectedId, setSelectedId] = useState(null);
+  const { mutateAsync } = useDeleteTimeSheet();
+  const [deleteModal, setDeleteModal] = useState(false);
+  const queryClient = useQueryClient();
+    async function deleteTimeSheet() {
+      try {
+        const response = await mutateAsync(selectedId);
+        queryClient.invalidateQueries({ queryKey: [TIMESHEET_MUTATION_KEY] });
+        if (response?.success) {
+          successToast(response.message);
+          queryClient.invalidateQueries({ queryKey: [TIMESHEET_QUERY_KEY] })
+          setDeleteModal(false)
+        }
+      } catch (error) {
+        errorToast(error);
+      }
+    }
   const columns = [
     {
       title: "Name",
-      dataIndex: "name",
-      render: (text, record) => (
-        <span className="table-avatar">
-          <Link to="/profile" className="avatar">
-            <img alt="img" src={`${record.img}`} /> {/* Updated field name */}
-          </Link>
-          {text} <span>{record.role}</span>
-        </span>
-      ),
+      dataIndex: ["employeeId", "firstName"],
+      // render: (text, record) => (
+      //   <span className="table-avatar">
+      //     <Link to="/profile" className="avatar">
+      //       <img alt="img" src={`${record.img}`} />
+      //     </Link>
+      //     {text} <span>{record.role}</span>
+      //   </span>
+      // ),
+      sorter: (a, b) =>
+        a.employeeId?.firstName?.localeCompare(b.employeeId?.firstName),
       sorter: (a, b) => a.name.length - b.name.length,
     },
     {
       title: "Date",
       dataIndex: "date",
-      sorter: (a, b) => a.date.length - b.date.length,
+      sorter: (a, b) => new Date(a.date) - new Date(b.date),
+      render: (date) => date.split("T")[0],
     },
 
     {
-      title: "Projects",
-      dataIndex: "projects",
-      sorter: (a, b) => a.projects.length - b.projects.length,
+      title: "Project",
+      dataIndex: ["projectId", "projectName"],
+      sorter: (a, b) =>
+        a.projectId?.projectName?.localeCompare(b.projectId?.projectName),
     },
+    
 
-    {
-      title: "Assigned Hours",
-      dataIndex: "assignedhours",
-      sorter: (a, b) => a.assignedhours.length - b.assignedhours.length,
-    },
+    // {
+    //   title: "Assigned Hours",
+    //   dataIndex: "assignedhours",
+    //   sorter: (a, b) => a.assignedhours.length - b.assignedhours.length,
+    // },
 
     {
       title: "Hours",
@@ -179,7 +93,7 @@ const TimeSheet = () => {
     {
       title: "Action",
 
-      render: () => (
+      render: (record) => (
         <div className="dropdown dropdown-action text-end">
           <Link
             to="#"
@@ -194,15 +108,18 @@ const TimeSheet = () => {
               className="dropdown-item"
               to="#"
               data-bs-toggle="modal"
-              data-bs-target="#edit_todaywork"
+              data-bs-target="#add_todaywork"
+              onClick={() => setUs(record)}
             >
               <i className="fa fa-pencil m-r-5" /> Edit
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              data-bs-toggle="modal"
-              data-bs-target="#delete"
+              onClick={() => {
+                setSelectedId(record._id);
+                setDeleteModal(true);
+              }}
             >
               <i className="fa fa-trash m-r-5" /> Delete
             </Link>
@@ -230,12 +147,21 @@ const TimeSheet = () => {
           <div className="row">
             <div className="col-md-12">
               <div className="table-responsive">
-                <SearchBox />
+                <SearchBox pageSize={pageSize} onPageSizeChange={handlePageSizeChange}/>
                 <Table
                   columns={columns}
-                  dataSource={timesheet}
+                  dataSource={timeSheet}
                   className="table-striped"
                   rowKey={(record) => record.id}
+                  locale={{ emptyText: 'No records found' }}
+                  pagination={{
+                    current: paginationInfo.currentPage || currentPage,
+                    pageSize: paginationInfo.itemsPerPage || pageSize,
+                    total: paginationInfo.totalItems || 0,
+                    showSizeChanger: false,
+                    showQuickJumper: true,
+                    onChange: handleTableChange,
+                  }}
                 />
               </div>
             </div>
@@ -243,8 +169,14 @@ const TimeSheet = () => {
         </div>
         {/* /Page Content */}
       </div>
-      <AddTimeSheetModelPopup />
-      <DeleteModal Name="Delete Work Details" />
+      <AddTimeSheetModelPopup id={edit} setUs={setUs}/>
+      <DeleteModal
+          isOpen={deleteModal}
+          onClose={() => setDeleteModal(false)}
+          onDelete={deleteTimeSheet}
+          name="Delete Work Detail"
+          ID={selectedId}
+        />
     </>
   );
 };

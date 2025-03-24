@@ -8,11 +8,18 @@ type PropsTypes = {
   children: ReactNode;
 };
 
-const auth = getAuthFromStorage();
+const auth = getAuthFromStorage() ?? {
+  isAuthenticated: false,
+  user: null,
+  token: null,
+};
 
 function AuthProvider({ children }: PropsTypes) {
-  const [isAuthenticated, setIsAuthenticated] = useState(auth?.isAuthenticated);
-  const [user, setUser] = useState(auth?.user);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    auth.isAuthenticated ?? false
+  );
+  const [user, setUser] = useState<any>(auth.user ?? null);
+
   const queryClient = useQueryClient();
 
   const handleLogin = ({ user, token }: { user: any; token: string }) => {
@@ -51,9 +58,9 @@ function AuthProvider({ children }: PropsTypes) {
         isAuthenticated,
         user,
         handleLogin,
-        handleLogout,
         handleLoginToSession,
         updateUser,
+        handleLogout,
       }}
     >
       {children}

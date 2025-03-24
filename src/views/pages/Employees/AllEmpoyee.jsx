@@ -17,7 +17,9 @@ import AllEmployeeAddPopup from "../../../components/modelpopup/AllEmployeeAddPo
 import Breadcrumbs from "../../../components/Breadcrumbs";
 import DeleteModal from "../../../components/modelpopup/DeleteModal";
 import EmployeeListFilter from "../../../components/EmployeeListFilter";
-import { useGetAllEmployee } from "../../../api/hooks/employees/allEmployee.ts";
+import { EMPLOYEE_MUTATION_KEY, EMPLOYEE_QUERY_KEY, useDeleteEmployee, useGetAllEmployee } from "../../../api/hooks/employees/allEmployee.ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { errorToast, successToast } from "../../../utils/index.ts";
 
 const AllEmployee = () => {
   const { data: employeeData, isLoading } = useGetAllEmployee();
@@ -25,7 +27,23 @@ const AllEmployee = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   // Safely access the array of employees
   const employees = employeeData?.data ?? [];
-
+    const { mutateAsync } = useDeleteEmployee();
+    const [deleteModal, setDeleteModal] = useState(false);
+    const queryClient = useQueryClient();
+    const [selectedId, setSelectedId] = useState(null);
+  async function deleteEmployee() {
+    try {
+      const response = await mutateAsync(selectedId);
+      queryClient.invalidateQueries({ queryKey: [EMPLOYEE_MUTATION_KEY] });
+      if (response?.success) {
+        successToast(response.message);
+        queryClient.invalidateQueries({ queryKey: [EMPLOYEE_QUERY_KEY] })
+        setDeleteModal(false)
+      }
+    } catch (error) {
+      errorToast(error);
+    }
+  }
   return (
     <div>
       <div className="page-wrapper">
@@ -77,8 +95,10 @@ const AllEmployee = () => {
                           <Link
                             className="dropdown-item"
                             to="#"
-                            data-bs-toggle="modal"
-                            data-bs-target="#delete"
+                            onClick={() => {
+                              setSelectedId(employee._id);
+                              setDeleteModal(true);
+                            }}
                           >
                             <i className="fa-regular fa-trash-can m-r-5" /> Delete
                           </Link>
@@ -89,7 +109,7 @@ const AllEmployee = () => {
                           {employee.firstName} {employee.lastName}
                         </Link>
                       </h4>
-                      <div className="small text-muted">{employee.role}</div>
+                      <div className="small text-muted">{employee.designationId?.designationName}</div>
                     </div>
                   </div>
                 ))
@@ -104,7 +124,13 @@ const AllEmployee = () => {
       </div>
 
       <AllEmployeeAddPopup />
-      <DeleteModal Name="Delete Employee" />
+      <DeleteModal
+          isOpen={deleteModal}
+          onClose={() => setDeleteModal(false)}
+          onDelete={deleteEmployee}
+          name="Delete Employee"
+          ID={selectedId}
+        />
     </div>
   );
 };

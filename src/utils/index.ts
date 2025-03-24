@@ -13,13 +13,16 @@ export const getAuthFromStorage = () => {
   if (typeof window !== "undefined") {
     let user = JSON.parse(localStorage.getItem("user") ?? "null");
     let token = localStorage.getItem("token");
+
     if (!user) user = JSON.parse(sessionStorage.getItem("user") ?? "null");
     if (!token) token = sessionStorage.getItem("token");
 
-    const isAuthenticated = token && user ? true : false;
+    const isAuthenticated = !!(token && user);
     return { user, isAuthenticated, token };
   }
+  return { user: null, isAuthenticated: false, token: null };
 };
+
 export const saveUserToLocalStorage = ({
   user,
   token,
