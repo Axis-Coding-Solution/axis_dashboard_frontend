@@ -18,12 +18,11 @@ const OverTime = () => {
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(null);
   const [showResults, setShowResults] = useState(false);
-  const [searchDataResult, setSearchDataResult] = useState([]); // ✅ added state for result
+  const [searchDataResult, setSearchDataResult] = useState([]);
   const [formattedSearchDate, setFormattedSearchDate] = useState("");
-  // use the mutation hook for searching by date
+
   const { mutateAsync: searchData } = useSearchData();
 
-  // Handler for deleting an overtime record
   const handleDelete = async () => {
     try {
       const response = await deleteOvertime(selectedId);
@@ -38,18 +37,16 @@ const OverTime = () => {
     }
   };
 
-  // Handler for searching by the selected date
   const handleSearch = async () => {
     if (!selectedDate) return;
   
     const dateObj = selectedDate instanceof Date ? selectedDate : new Date(selectedDate);
-    const formattedDate = dateObj.toISOString().split("T")[0]; // YYYY-MM-DD
+    const formattedDate = dateObj.toISOString().split("T")[0]; 
     console.log("Formatted date to send:", formattedDate);
     setFormattedSearchDate(formattedDate); 
   
     try {
       const result = await searchData(formattedDate);
-      console.log(result, '22222222222222');
   
       if (result && Array.isArray(result.data)) {
         const data = result.data;

@@ -41,8 +41,6 @@ export const AddTimeSheetModelPopup = ({ id, setUs }) => {
       label: proj.projectName,
       value: proj._id,
     })) || [];
-
-  // UseEffect for setting form fields and project on edit mode
   useEffect(() => {
     if (id?._id && timeSheetData && projects?.length) {
       const selectedProj = projects.find(

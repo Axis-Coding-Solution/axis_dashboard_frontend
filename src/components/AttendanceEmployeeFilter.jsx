@@ -17,14 +17,20 @@ const AttendanceEmployeeFilter = () => {
     { value: 4, label: "Apr" },
     { value: 5, label: "May" },
     { value: 6, label: "June" },
+    { value: 7, label: "July" },
+    { value: 8, label: "Aug" },
+    { value: 9, label: "Sep" },
+    { value: 10, label: "Oct" },
+    { value: 11, label: "Nov" },
+    { value: 12, label: "Dec" },
   ];
   const year = [
-    { value: 1, label: "2023" },
-    { value: 2, label: "2022" },
-    { value: 3, label: "2021" },
-    { value: 4, label: "2020" },
-    { value: 5, label: "2023" },
-    { value: 6, label: "2018" },
+    { value: 1, label: "2030" },
+    { value: 2, label: "2029" },
+    { value: 3, label: "2028" },
+    { value: 4, label: "2027" },
+    { value: 5, label: "2026" },
+    { value: 6, label: "2025" },
   ];
 
   const customStyles = {

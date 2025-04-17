@@ -22,7 +22,6 @@ const setAuthToken = (config: any) => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
-    console.log('qwerty',token)
     return config;
 
 }
