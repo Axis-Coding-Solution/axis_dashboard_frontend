@@ -1,9 +1,22 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import LeaveSettingCustomPolicy from "./LeaveSettingCustomPolicy";
 import DeleteModal from "../../../components/modelpopup/DeleteModal";
 import LeaveSettingAddModelPopup from "../../../components/modelpopup/LeaveSettingAddModelPopup";
 import Breadcrumbs from "../../../components/Breadcrumbs";
+import { useAddLeaveSettings, useEditLeaveSettings, useGetAllLeaveSettings } from "../../../api/hooks/employees/leaveSettings.ts";
+import { errorToast, successToast } from "../../../utils/index.ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import { leaveGenaricInitialValue } from "../../../utils/constants/leaveSettings.ts";
+import { leaveGenaricSchema } from "../../../utils/validation-schemas/leaveSettings.ts";
+import AnnualLeave from "./Annual.jsx";
+import SickLeave from "./SickLeave.jsx";
+import HospitalisationLeave from "./Hospitalisation.jsx";
+import MaternityLeave from "./Maternity.jsx";
+import PaternityLeave from "./Paternity.jsx";
+import LOPLeave from "./LOP.jsx";
 
 const LeaveSettings = () => {
   const [show, setShow] = useState(false);
@@ -85,6 +98,9 @@ const LeaveSettings = () => {
   const lopEarnclose = () => {
     setLopearn(false);
   };
+  
+
+
 
   return (
     <>
@@ -92,250 +108,84 @@ const LeaveSettings = () => {
         {/* Page Content */}
         <div className="content container-fluid">
           {/* Page Header */}
-          <Breadcrumbs
+          {/* <Breadcrumbs
             maintitle="Leave Settings"
             title="Dashboard"
             subtitle="Leave Settings"
             modal="#add_custom_policy"
             name="Add New"
-          />
+          /> */}
           {/* /Page Header */}
           <div className="row">
             <div className="col-md-12">
               {/* Annual Leave */}
-              <div className="card leave-box " id="leave_annual">
+              {/* <div className="card leave-box " id="leave_annual">
                 <div className="card-body">
                   <div className="h3 card-title with-switch">
                     Annual
-                    <div className="onoffswitch">
-                      <input
-                        type="checkbox"
-                        name="onoffswitch"
-                        className="onoffswitch-checkbox"
-                        id="switch_custom01"
-                        defaultChecked
-                      />
-                      <label
-                        className="onoffswitch-label"
-                        htmlFor="switch_custom01"
-                      >
-                        <span className="onoffswitch-inner" />
-                        <span className="onoffswitch-switch" />
-                      </label>
-                    </div>
                   </div>
-                  <div className="leave-item">
-                    {/* Annual Days Leave */}
-                    <div className="leave-row">
-                      <div className="leave-left">
-                        <div className="input-box">
-                          <div className="input-block">
-                            <label>Days</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              disabled={!show ? true : false}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      {show ? (
-                        <div className="leave-right">
-                          <button
-                            className="btn btn-white leave-cancel-btn"
-                            onClick={handleClose}
-                          >
-                            {" "}
-                            Cancel
-                          </button>
-                          <button className="btn btn-primary leave-save-btn">
-                            {" "}
-                            Save
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="leave-right">
-                          <button
-                            className="leave-edit-btn"
-                            onClick={handleShow}
-                          >
-                            Edit
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    {/* /Annual Days Leave */}
-                    {/* Carry Forward */}
-                    <div className="leave-row">
-                      <div className="leave-left">
-                        <div className="input-box">
-                          <label className="d-block">Carry forward</label>
-                          <div className="leave-inline-form">
-                            <div className="form-check form-check-inline">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="carryForward"
-                                id="carry_no_01"
-                                defaultValue="option1"
-                                disabled={!carryFrwd}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="carry_no_01"
-                              >
-                                No
-                              </label>
-                            </div>
-                            <div className="form-check form-check-inline">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="carryForward"
-                                id="carry_yes_01"
-                                defaultValue="option2"
-                                disabled={!carryFrwd}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="carry_yes_01"
-                              >
-                                Yes
-                              </label>
-                            </div>
-                            <div className="input-group">
-                              <span className="input-group-text">Max</span>
+                  <form onSubmit={handleSubmit(onSubmitHandler)}>
+                    <div className="leave-item">
+                      <div className="leave-row">
+                        <div className="leave-left">
+                          <div className="input-box">
+                            <div className="input-block">
+                              <label>Days</label>
                               <input
                                 type="text"
                                 className="form-control"
-                                disabled={!carryFrwd}
+                                disabled={!show}
+                                {...register("noOfDays")}
                               />
                             </div>
                           </div>
                         </div>
+                        {show ? (
+                          <div className="leave-right">
+                            <button
+                              type="button"
+                              className="btn btn-white leave-cancel-btn"
+                              onClick={handleClose}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="submit"
+                              aria-label="Close"
+                              className="btn btn-primary leave-save-btn"
+                            >
+                              Save
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="leave-right">
+                            <button
+                              type="button"
+                              className="leave-edit-btn"
+                              onClick={handleShow}
+                            >
+                              Edit
+                            </button>
+                          </div>
+                        )}
                       </div>
+                    </div>
+                  </form>
 
-                      {carryFrwd ? (
-                        <div className="leave-right">
-                          <button
-                            className="btn btn-white leave-cancel-btn"
-                            onClick={carryFrwdclose}
-                          >
-                            {" "}
-                            Cancel
-                          </button>
-                          <button className="btn btn-primary leave-save-btn">
-                            {" "}
-                            Save
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="leave-right">
-                          <button
-                            className="leave-edit-btn"
-                            onClick={carryFrwdshow}
-                          >
-                            Edit
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    {/* /Carry Forward */}
-                    {/* Earned Leave */}
-                    <div className="leave-row">
-                      <div className="leave-left">
-                        <div className="input-box">
-                          <label className="d-block">Earned leave</label>
-                          <div className="leave-inline-form">
-                            <div className="form-check form-check-inline">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="inlineRadioOptions"
-                                id="inlineRadio1"
-                                defaultValue="option1"
-                                disabled={!carryEarned}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="inlineRadio1"
-                              >
-                                No
-                              </label>
-                            </div>
-                            <div className="form-check form-check-inline">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="inlineRadioOptions"
-                                id="inlineRadio2"
-                                defaultValue="option2"
-                                disabled={!carryEarned}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="inlineRadio2"
-                              >
-                                Yes
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {carryEarned ? (
-                        <div className="leave-right">
-                          <button
-                            className="btn btn-white leave-cancel-btn"
-                            onClick={carryEarnedclose}
-                          >
-                            {" "}
-                            Cancel
-                          </button>
-                          <button className="btn btn-primary leave-save-btn">
-                            {" "}
-                            Save
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="leave-right">
-                          <button
-                            className="leave-edit-btn"
-                            onClick={carryEarnedshow}
-                          >
-                            Edit
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    {/* /Earned Leave */}
-                  </div>
                   <LeaveSettingCustomPolicy />
                 </div>
-              </div>
-
+              </div> */}
+              <AnnualLeave />
               {/* /Annual Leave */}
               {/* Sick Leave */}
-              <div className="card leave-box" id="leave_sick">
+              
+             <SickLeave/>
+             {/* <div className="card leave-box" id="leave_sick">
                 <div className="card-body">
                   <div className="h3 card-title with-switch">
                     Sick
-                    <div className="onoffswitch">
-                      <input
-                        type="checkbox"
-                        name="onoffswitch"
-                        className="onoffswitch-checkbox"
-                        id="switch_sick"
-                        defaultChecked
-                      />
-                      <label
-                        className="onoffswitch-label"
-                        htmlFor="switch_sick"
-                      >
-                        <span className="onoffswitch-inner" />
-                        <span className="onoffswitch-switch" />
-                      </label>
-                    </div>
                   </div>
+                  
                   <div className="leave-item">
                     <div className="leave-row">
                       <div className="leave-left">
@@ -378,32 +228,18 @@ const LeaveSettings = () => {
                     </div>
                   </div>
                 </div>
-                <LeaveSettingCustomPolicy />
-              </div>
+                <LeaveSettingCustomPolicy /> 
+              </div>  */}
+              
               {/* /Sick Leave */}
               {/* Hospitalisation Leave */}
-              <div className="card leave-box" id="leave_hospitalisation">
+              {/* <div className="card leave-box" id="leave_hospitalisation">
                 <div className="card-body">
                   <div className="h3 card-title with-switch">
                     Hospitalisation
-                    <div className="onoffswitch">
-                      <input
-                        type="checkbox"
-                        name="onoffswitch"
-                        className="onoffswitch-checkbox"
-                        id="switch_hospitalisation"
-                      />
-                      <label
-                        className="onoffswitch-label"
-                        htmlFor="switch_hospitalisation"
-                      >
-                        <span className="onoffswitch-inner" />
-                        <span className="onoffswitch-switch" />
-                      </label>
-                    </div>
+                   
                   </div>
                   <div className="leave-item">
-                    {/* Annual Days Leave */}
                     <div className="leave-row">
                       <div className="leave-left">
                         <div className="input-box">
@@ -439,33 +275,18 @@ const LeaveSettings = () => {
                         </div>
                       )}
                     </div>
-                    {/* /Annual Days Leave */}
                   </div>
                 </div>
-              </div>
+              </div> */}
+              <HospitalisationLeave/>
               {/* /Hospitalisation Leave */}
               {/* Maternity Leave */}
-              <div className="card leave-box" id="leave_maternity">
+              {/* <div className="card leave-box" id="leave_maternity">
                 <div className="card-body">
                   <div className="h3 card-title with-switch">
                     Maternity{" "}
                     <span className="subtitle">Assigned to female only</span>
-                    <div className="onoffswitch">
-                      <input
-                        type="checkbox"
-                        name="onoffswitch"
-                        className="onoffswitch-checkbox"
-                        id="switch_maternity"
-                        defaultChecked
-                      />
-                      <label
-                        className="onoffswitch-label"
-                        htmlFor="switch_maternity"
-                      >
-                        <span className="onoffswitch-inner" />
-                        <span className="onoffswitch-switch" />
-                      </label>
-                    </div>
+                  
                   </div>
                   <div className="leave-item">
                     <div className="leave-row">
@@ -508,30 +329,16 @@ const LeaveSettings = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
+               <MaternityLeave/>
               {/* /Maternity Leave */}
               {/* Paternity Leave */}
-              <div className="card leave-box" id="leave_paternity">
+              {/* <div className="card leave-box" id="leave_paternity">
                 <div className="card-body">
                   <div className="h3 card-title with-switch">
                     Paternity{" "}
                     <span className="subtitle">Assigned to male only</span>
-                    <div className="onoffswitch">
-                      <input
-                        type="checkbox"
-                        name="onoffswitch"
-                        className="onoffswitch-checkbox"
-                        id="switch_paternity"
-                        disabled={!paternty}
-                      />
-                      <label
-                        className="onoffswitch-label"
-                        htmlFor="switch_paternity"
-                      >
-                        <span className="onoffswitch-inner" />
-                        <span className="onoffswitch-switch" />
-                      </label>
-                    </div>
+                   
                   </div>
                   <div className="leave-item">
                     <div className="leave-row">
@@ -574,38 +381,17 @@ const LeaveSettings = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
+              <PaternityLeave/>
               {/* /Paternity Leave */}
               {/* Custom Create Leave */}
-              <div className="card leave-box mb-0" id="leave_custom01">
+              {/* <div className="card leave-box mb-0" id="leave_custom01">
                 <div className="card-body">
                   <div className="h3 card-title with-switch">
                     LOP
-                    <div className="onoffswitch">
-                      <input
-                        type="checkbox"
-                        name="onoffswitch"
-                        className="onoffswitch-checkbox"
-                        id="switch_custom01"
-                        defaultChecked
-                      />
-                      <label
-                        className="onoffswitch-label"
-                        htmlFor="switch_custom01"
-                      >
-                        <span className="onoffswitch-inner" />
-                        <span className="onoffswitch-switch" />
-                      </label>
-                    </div>
-                    <button
-                      className="btn btn-danger leave-delete-btn"
-                      type="button"
-                    >
-                      Delete
-                    </button>
+                   
                   </div>
                   <div className="leave-item">
-                    {/* Annual Days Leave */}
                     <div className="leave-row">
                       <div className="leave-left">
                         <div className="input-box">
@@ -644,154 +430,12 @@ const LeaveSettings = () => {
                         </div>
                       )}
                     </div>
-                    {/* /Annual Days Leave */}
-                    {/* Carry Forward */}
-                    <div className="leave-row">
-                      <div className="leave-left">
-                        <div className="input-box">
-                          <label className="d-block">Carry forward</label>
-                          <div className="leave-inline-form">
-                            <div className="form-check form-check-inline">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="carryForward"
-                                id="carry_no_01"
-                                defaultValue="option1"
-                                disabled={!lopCarryfrwd}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="carry_no_01"
-                              >
-                                No
-                              </label>
-                            </div>
-                            <div className="form-check form-check-inline">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="carryForward"
-                                id="carry_yes_01"
-                                defaultValue="option2"
-                                disabled={!lopCarryfrwd}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="carry_yes_01"
-                              >
-                                Yes
-                              </label>
-                            </div>
-                            <div className="input-group">
-                              <span className="input-group-text">Max</span>
-                              <input
-                                type="text"
-                                className="form-control"
-                                disabled={!lopCarryfrwd}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
 
-                      {lopCarryfrwd ? (
-                        <div className="leave-right">
-                          <button
-                            className="btn btn-white leave-cancel-btn"
-                            onClick={lopCarryclose}
-                          >
-                            {" "}
-                            Cancel
-                          </button>
-                          <button className="btn btn-primary leave-save-btn">
-                            {" "}
-                            Save
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="leave-right">
-                          <button
-                            className="leave-edit-btn"
-                            onClick={lopCarryshow}
-                          >
-                            Edit
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    {/* /Carry Forward */}
-                    {/* Earned Leave */}
-                    <div className="leave-row">
-                      <div className="leave-left">
-                        <div className="input-box">
-                          <label className="d-block">Earned leave</label>
-                          <div className="leave-inline-form">
-                            <div className="form-check form-check-inline">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="inlineRadioOptions"
-                                id="inlineRadio1"
-                                defaultValue="option1"
-                                disabled={!lopEarn}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="inlineRadio1"
-                              >
-                                No
-                              </label>
-                            </div>
-                            <div className="form-check form-check-inline">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="inlineRadioOptions"
-                                id="inlineRadio2"
-                                defaultValue="option2"
-                                disabled={!lopEarn}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="inlineRadio2"
-                              >
-                                Yes
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {lopEarn ? (
-                        <div className="leave-right">
-                          <button
-                            className="btn btn-white leave-cancel-btn"
-                            onClick={lopEarnclose}
-                          >
-                            {" "}
-                            Cancel
-                          </button>
-                          <button className="btn btn-primary leave-save-btn">
-                            {" "}
-                            Save
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="leave-right">
-                          <button
-                            className="leave-edit-btn"
-                            onClick={lopEarnshow}
-                          >
-                            Edit
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    {/* /Earned Leave */}
                   </div>
                   <LeaveSettingCustomPolicy />
                 </div>
-              </div>
+              </div> */}
+               <LOPLeave/>
             </div>
             {/* /Custom Create Leave */}
           </div>
@@ -799,8 +443,8 @@ const LeaveSettings = () => {
       </div>
       {/* /Page Content */}
 
-      <LeaveSettingAddModelPopup />
-      <DeleteModal Name="Custom Policy" />
+      {/* <LeaveSettingAddModelPopup /> */}
+      {/* <DeleteModal Name="Custom Policy" /> */}
     </>
   );
 };

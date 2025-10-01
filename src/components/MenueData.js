@@ -26,7 +26,7 @@ export const sideMenu = [
           menu: false,
           icon: "",
           path: "/app/employee/allemployees",
-          child: [],
+          child: [], 
           Menu_ID: 20,
         },
         {
