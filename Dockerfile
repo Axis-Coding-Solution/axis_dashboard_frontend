@@ -1,10 +1,32 @@
-FROM node:latest
-COPY . /home/app
+# Use specific Node.js version instead of latest for stability
+FROM node:18-alpine AS build
 
-WORKDIR /home/app
+# Set working directory
+WORKDIR /app
 
-RUN npm install
+# Copy package files first for better caching
+COPY package*.json ./
 
-EXPOSE 3000
+# Install dependencies (use npm install since no package-lock.json exists)
+RUN npm install --only=production
 
-CMD ["npm", "run", "start"]
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Production stage with nginx
+FROM nginx:alpine
+
+# Copy built app from build stage
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy custom nginx config if needed (optional)
+# COPY nginx.conf /etc/nginx/nginx.conf
+
+# Expose port 80 for nginx
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
